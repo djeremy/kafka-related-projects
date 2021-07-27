@@ -1,0 +1,35 @@
+djeremy.kafka.system.monitor.v2:
+  configurations:
+    - id: TestStepConfig
+      description: "Event 3 or it's alternative should be received"
+      steps:
+        - type: single
+          description: "Command"
+          topic: commands.topic
+          schemaName: com.djeremy.avro.test.v2.Command
+          eventIdSchemaPath: id.value
+          referenceIdSchemaPaths:
+            - event1Id.value
+            - event2Id.value
+        - type: single
+          description: "Event1"
+          topic: events1.topic
+          schemaName: com.djeremy.avro.test.v2.Event1
+          eventIdSchemaPath: id.value
+        - type: single
+          description: "Event2"
+          topic: events2.topic
+          schemaName: com.djeremy.avro.test.v2.Event2
+          eventIdSchemaPath: id.value
+          referenceIdSchemaPaths:
+            - event3Id.value
+        - type: multipleExclusive
+          description: "Event3"
+          topic: events3.topic
+          schemaName: com.djeremy.avro.test.v2.Event3
+          eventIdSchemaPath: id.value
+          indicateProcessFinished: true
+          altSchemaName: com.djeremy.avro.test.v2.AlternativeEvent3
+          altEventIdSchemaPath: id.value
+          altIndicateProcessFinished: true
+      expectToFinishIn: 1s

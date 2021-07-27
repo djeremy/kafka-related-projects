@@ -1,0 +1,49 @@
+djeremy.kafka.system.monitor.v2:
+  configurations:
+    - id: TestStepConfig1
+      description: Test Step Configuration (with topic definition intersections) 1
+      steps:
+        - type: single
+          description: "Command"
+          topic: m.commands.topic
+          schemaName: com.djeremy.avro.test.v2.Command
+          eventIdSchemaPath: id.value
+          referenceIdSchemaPaths:
+            - event1Id.value
+            - event2Id.value
+        - type: single
+          description: "Event1"
+          topic: m.events1.topic
+          schemaName: com.djeremy.avro.test.v2.Event1
+          eventIdSchemaPath: id.value
+        - type: single
+          description: "Event2"
+          topic: m.events2.topic
+          schemaName: com.djeremy.avro.test.v2.Event2
+          eventIdSchemaPath: id.value
+          referenceIdSchemaPaths:
+            - event3Id.value
+        - type: single
+          description: "Event3"
+          topic: m.events3.topic
+          schemaName: com.djeremy.avro.test.v2.Event3
+          eventIdSchemaPath: id.value
+          indicateProcessFinished: true
+      expectToFinishIn: 30s
+    - id: TestStepConfig2
+      description: Test Step Configuration (with topic definition intersections) 2
+      steps:
+        - type: single
+          description: "Event2"
+          topic: m.events2.topic
+          schemaName: com.djeremy.avro.test.v2.Event2
+          eventIdSchemaPath: id.value
+          referenceIdSchemaPaths:
+            - event3Id.value
+        - type: single
+          description: "Event3"
+          topic: m.events3.topic
+          schemaName: com.djeremy.avro.test.v2.Event3
+          eventIdSchemaPath: id.value
+          indicateProcessFinished: true
+      expectToFinishIn: 30s

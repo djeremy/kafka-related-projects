@@ -1,0 +1,16 @@
+micronaut:
+  server:
+    port: 9999
+    host: "0.0.0.0"
+
+kafkahq:
+  connections:
+    local:
+      properties:
+        bootstrap.servers: "bpm-kafka:9092"
+      schema-registry:
+        url: "http://bpm-kafka-schema-registry:8081"
+  clients-defaults:
+    consumer:
+      properties:
+        isolation.level: read_committed

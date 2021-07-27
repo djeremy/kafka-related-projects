@@ -1,0 +1,14 @@
+@namespace("com.djeremy.avro.test")
+protocol TestModel{
+
+  import idl "../../main/avro/Uuid.avdl";
+
+  record Command {
+    com.djeremy.avro.UUID id;
+  }
+
+  record Event {
+    com.djeremy.avro.UUID id;
+  }
+
+}

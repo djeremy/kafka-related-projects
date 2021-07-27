@@ -1,0 +1,12 @@
+// create cluster
+
+kind create cluster --config configuration.yaml
+
+
+kubectl logs bpm-kafka --container kafka-1
+
+// access pod's containers
+kubectl exec -it bpm-kafka --container kafka-1 -- /bin/bash
+
+kafka-topics --bootstrap-server bpm-kafka:9092 --list
+kafka-topics --bootstrap-server bpm-kafka:9092 --create --topic business-process.step.events

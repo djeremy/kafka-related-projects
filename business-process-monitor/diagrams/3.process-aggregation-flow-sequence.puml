@@ -1,0 +1,82 @@
+@startuml
+
+skinparam responseMessageBelowArrow true
+
+
+participant Scheduler as scheduler #SkyBlue
+
+participant ProcessInstanceStateTask as stateTask #motivation
+
+participant StepService as stepService #motivation
+database StepDao as stepDao #lavender
+
+participant ProcessInstanceStateService as stateService #motivation
+
+database ProcessInstanceStateDao as stateDao #lavender
+participant ProcessStateAdmitTask as admitTask #motivation
+database ProcessConfigurationDao as configurationDao #lavender
+participant ExpiredAlert as expiredAlert #motivation
+
+== State Calculation ==
+scheduler --> stateTask : Trigger task
+
+activate stateTask
+
+stateTask --> stepService : Get newly assigned steps
+stepService --> stepDao
+stepDao --> stepService
+
+stepService --> stateTask : Newly assigned steps
+
+stateTask --> stateService : Aggregate steps
+
+activate stateService
+
+stateService --> stateService : Group steps by processInstanceId
+    loop  by processInstanceId
+        stateService --> stateDao : Get by processInstanceId
+        alt exists
+            stateService --> stateService : Update with steps
+        else not exist
+            stateService --> stateService : Create new
+        end
+        alt has last step
+            stateService --> stateService : Finish
+        end
+
+        stateService --> stateDao : Upsert state
+    end
+
+deactivate stateService
+
+stateTask --> stepService : Mature newly assigned steps
+
+stepService --> stepDao
+
+deactivate stateTask
+
+== Admitting ==
+
+activate admitTask
+admitTask --> stateDao : Get all not admitted process \n instances
+stateDao --> admitTask : All not admitted processes
+
+admitTask --> admitTask : Group by configurationId
+
+loop each configurationId
+    admitTask --> configurationDao: Get expected time range
+    configurationDao --> admitTask
+    loop each process instance
+        alt should admit
+            admitTask --> admitTask: Admit
+            admitTask --> stateDao: Update
+            alt is expired
+                admitTask --> expiredAlert: Alert expired process instance
+            end
+        else skip for next iteration
+        end
+    end
+end
+
+
+@enduml

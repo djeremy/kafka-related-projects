@@ -1,0 +1,35 @@
+@namespace("com.djeremy.avro.test.v2")
+protocol TestModelV2{
+
+  import idl "../../main/avro/Uuid.avdl";
+
+  record Command {
+    com.djeremy.avro.UUID id;
+    com.djeremy.avro.UUID event1Id;
+    com.djeremy.avro.UUID event2Id;
+  }
+
+  record Event1 {
+    com.djeremy.avro.UUID id;
+  }
+
+  record Event2 {
+    com.djeremy.avro.UUID id;
+    com.djeremy.avro.UUID event3Id;
+  }
+
+  record Event3 {
+    com.djeremy.avro.UUID id;
+  }
+
+  record AlternativeEvent3 {
+    com.djeremy.avro.UUID id;
+  }
+
+  record NestedCommand {
+    com.djeremy.avro.UUID id;
+    Command nestedCommand;
+    com.djeremy.avro.UUID otherId;
+  }
+
+}

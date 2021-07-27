@@ -1,0 +1,41 @@
+@startuml
+
+skinparam responseMessageBelowArrow true
+
+queue input.events as input <<multiple input topics>>  #lightYellow
+
+participant StepTransformer as transformer #motivation
+
+queue "business-process.step.events" as stepEvents #lightYellow
+
+participant StepService as stepService #motivation
+
+database StepDao as stepDao #lavender
+
+group input events
+    input --> transformer : Receive event1
+    input --> transformer : Receive event2
+end
+
+transformer --> stepEvents : Send ProcessStep
+stepEvents --> stepService : Receive ProcessStep
+
+
+activate stepService
+stepService --> stepDao : Fetch descendants
+stepDao --> stepService : Return descendants
+
+stepService --> stepDao : Fetch ascendants
+stepDao --> stepService : Return ascendants
+|||
+stepService --> stepService : Try join under steps with \n single processInstanceId
+|||
+stepService --> stepDao : Save new step
+alt found steps not yet assigned
+stepService --> stepDao : Assign new process \n instance id
+end
+deactivate stepService
+
+
+
+@enduml

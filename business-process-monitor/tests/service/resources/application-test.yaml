@@ -1,0 +1,15 @@
+##
+## Define in this file only properties that you would like to override src/main/resources/application.yaml
+##
+
+djeremy.kafka.brokers: ${spring.embedded.kafka.brokers}
+djeremy.kafka.schema.registry.url: mock://localhost:8081
+djeremy.kafka.streams.auto-offset-reset: earliest
+
+spring.autoconfigure.exclude: org.springframework.cloud.stream.test.binder.TestSupportBinderAutoConfiguration
+
+spring.data.mongodb.uri: mongodb://root_user:secret@localhost:27017/mydb_test
+spring.kafka.consumer.properties.allow.auto.create.topics: true
+spring.cloud.stream.kafka.binder.autoCreateTopics: true
+
+process.instance.state.task.lag.duration: 0s

@@ -1,0 +1,18 @@
+@namespace("com.djeremy.avro.business.process.monitor.v2")
+protocol ProcessStep {
+
+  record ProcessStep {
+    string configurationId;
+    string stepId;
+    string eventId;
+    array<Reference> references;
+    boolean isLast;
+    timestamp_ms receivedAt;
+  }
+
+  record Reference {
+    string id;
+    string name;
+  }
+
+}

@@ -1,0 +1,25 @@
+// connect to mongo's pod
+kubectl exec -it bpm-mongo -- /bin/bash
+
+//
+
+mongo -u {username} -p {password}
+
+use bpm_db
+
+db.getCollectionNames()
+
+<=======================================StepsDao=======================================================================>
+db.steps_v2.find({"configurationId": "processCreated", "processInstance": {"$ne": null }, "references.referenceId": "36968ef8-904b-40e4-a16f-40a8a010edda"}).hint("test3").explain("executionStats")
+db.steps_v2.find({"configurationId": "processCreated", "processInstance": {"$ne": null }, "references.referenceId": "36968ef8-904b-40e4-a16f-40a8a010edda"}).explain("executionStats")
+
+db.steps_v2.find({"configurationId" : "processCreated", "processInstance" : null, "eventId" : { "$in" : ["8b18d9b1-9e30-40a3-bb89-ad653e6befb7"]}}).explain("executionStats")
+
+db.steps_v2.find({ "isNewlyInstanceAssigned" : true}).sort({ "receivedAt" : 1}).explain("executionStats")
+
+<=======================================ProcessInstanceDao=============================================================>
+db.process_instance_state.find( { "_id" : { "_id" : "f7812378-6420-4324-83ff-dd61a238e14a", "configurationId" : "processCreated"}}).explain("executionStats").executionStats
+db.process_instance_state.find({"stage.isAdmitted" : false, "startedAt" : { "$lt" : { "$date" : "2021-02-22T14:18:30.082Z"}}}).sort({ "startedAt" : 1}).explain("executionStats")
+
+<======================================================================================================================>
+db.steps_v2.aggregate( [ { $indexStats: { } } ] )

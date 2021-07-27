@@ -1,0 +1,44 @@
+sourceSets {
+    unitTest {
+        kotlin.srcDir "$projectDir/tests/unit/kotlin"
+        resources.srcDir "$projectDir/tests/unit/resources"
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+idea {
+    module {
+        name = "unitTest"
+        testSourceDirs += project.sourceSets.unitTest.kotlin.srcDirs
+        testResourceDirs += project.sourceSets.unitTest.resources.srcDirs
+    }
+}
+
+configurations {
+    unitTestImplementation.extendsFrom testImplementation
+    unitTestRuntime.extendsFrom testRuntime
+}
+
+task unitTest(type: Test) {
+    description = "Unit Tests"
+    group = "verification"
+
+    testClassesDirs = sourceSets.unitTest.output.classesDirs
+    classpath = sourceSets.unitTest.runtimeClasspath
+
+    useJUnitPlatform {
+        includeEngines 'spek2', 'junit-jupiter'
+    }
+
+    testLogging {
+        events = ["started", "passed", "skipped", "failed"]
+        showStandardStreams = false
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
+        exceptionFormat = "FULL"
+    }
+}
+
+test.dependsOn(unitTest)

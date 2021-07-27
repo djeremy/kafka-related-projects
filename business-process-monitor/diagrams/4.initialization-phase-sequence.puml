@@ -1,0 +1,86 @@
+@startuml
+
+skinparam responseMessageBelowArrow true
+
+
+actor Kubernetes as kube
+
+participant Application as app
+participant ConfigurationPropertiesLoader as propertiesLoader #motivation
+participant ConfigurationProperties as properties #SkyBlue
+
+participant StreamsStartup as startUp #motivation
+participant StreamsRegistration as registration #motivation
+
+participant ProcessConfigurationService as processService #motivation
+database ProcessConfigurationDao as processConfigurationDao #lavender
+
+participant StepConfigurationService as stepService #motivation
+database StepConfigurationDao as stepConfigurationDao #lavender
+
+kube --> app: Start
+
+== Loading configurations ==
+activate app
+
+
+app --> propertiesLoader: Load properties
+activate propertiesLoader
+propertiesLoader --> properties: Get properties
+properties --> properties : Read properties from yaml
+properties --> propertiesLoader
+
+loop each configuration
+    propertiesLoader --> processService: Load configuration
+    alt valid model
+        processService --> processConfigurationDao: Update configuration
+        processService --> stepService: Load step configurations
+        alt valid models
+            stepService --> stepConfigurationDao: Replace configurations
+        else throw exception
+        end
+    else throw exception
+    end
+deactivate propertiesLoader
+end
+
+== Starting streams ==
+
+app --> startUp : Initialize all streams
+activate startUp
+
+startUp --> registration: Register application streams
+
+note left
+    Register streams which processes
+    steps received from topic:
+    <i>business-process.step.events</i>
+end note
+
+startUp --> processService : Read all configurations
+processService --> processConfigurationDao
+processConfigurationDao --> processService
+loop each configuration
+    processService --> stepService: Load steps for configurationId
+    stepService --> stepConfigurationDao
+    stepConfigurationDao --> stepService
+    stepService --> processService
+end
+
+processService --> startUp: Process configurations with steps
+
+startUp --> startUp: Prepare list of TopicTransformations
+startUp --> registration: Initialize all TopicTransformation
+
+deactivate startUp
+
+deactivate app
+
+note over of app
+Order of execution of
+<b>ProcessConfigurationLoader</b> and
+<b>StreamsStartup</b> is defined using Spring
+bean definition ordering
+end note
+
+@enduml

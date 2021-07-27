@@ -1,0 +1,15 @@
+@namespace("com.djeremy.avro.process")
+protocol Process {
+
+  record CreateProcess {
+    ProcessId processId;
+  }
+
+  record ProcessCreated {
+    ProcessId processId;
+  }
+
+  record ProcessId{
+    string value;
+  }
+}

@@ -1,0 +1,69 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bpm-kafka
+spec:
+  type: NodePort
+  selector:
+    app: bpm-kafka
+  ports:
+    - port: 9092
+      targetPort: 9092
+      name: kafka
+    - port: 19092
+      targetPort: 19092
+      nodePort: 30092
+      name: kafka-external
+    - port: 2181
+      targetPort: 2181
+      nodePort: 30181
+      name: zookeeper
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bpm-kafka
+  labels:
+    app: bpm-kafka
+spec:
+  volumes:
+    - name: create-topics-script
+      configMap:
+        name: create-topics-script
+        defaultMode: 0777
+  containers:
+    - name: zookeeper
+      image:  zookeeper:3.5.7
+
+    - name: kafka-1
+      image: confluentinc/cp-kafka:5.5.0
+      env:
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: localhost:2181
+        - name: KAFKA_BROKER_ID
+          value: "1"
+        - name: KAFKA_LOG4J_LOGGERS
+          value: kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO
+        - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+          value: "1"
+#        https://www.confluent.io/blog/kafka-listeners-explained/
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: LISTENER_DOCKER_INTERNAL://bpm-kafka:9092,LISTENER_DOCKER_EXTERNAL://localhost:19092
+        - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+          value: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+        - name: KAFKA_INTER_BROKER_LISTENER_NAME
+          value: LISTENER_DOCKER_INTERNAL
+        - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
+          value: "1"
+        - name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+          value: "1"
+      volumeMounts:
+        - mountPath: /scripts/create-topics.sh
+          subPath: create-topics.sh
+          name: create-topics-script
+      lifecycle:
+        postStart:
+          exec:
+            command: ["/bin/bash", "-c", "./scripts/create-topics.sh business-process.step.events process.create.commands process.create.events"]

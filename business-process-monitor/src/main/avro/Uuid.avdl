@@ -1,0 +1,8 @@
+@namespace("com.djeremy.avro")
+protocol Uuid {
+
+  record UUID {
+    string value;
+  }
+
+}

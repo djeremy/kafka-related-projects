@@ -1,0 +1,147 @@
+@startuml
+
+skinparam monochrome true
+
+
+cloud "Input topics" {
+    queue some.events as events1
+    queue other.events as events2
+
+}
+
+
+cloud Infrastructure as INF{
+    database "Mongo\n" as mongo {
+     [StepDao] as stepDao
+     [ProcessConfigurationDao] as processConfigurationDao
+     [ProcessInstanceStateDao] as processStateDao
+
+     stepDao -[hidden]down- processConfigurationDao
+    }
+
+    note bottom of stepDao
+     class StepDao {
+        var id: String
+        val configurationId: String
+        val stepId: String
+        val eventId: String
+        val receivedAt: LocalDateTime
+        val references: List<ReferenceDao>
+        val isLast: Boolean
+        var processInstance: ProcessInstanceDao
+        var isNewlyInstanceAssigned: Boolean
+     }
+
+     data class ReferenceDao(
+        val referenceId: String
+        val referenceName: String
+     )
+    end note
+
+    note bottom of processStateDao
+     class ProcessInstanceStateDao(
+        val instance: ProcessInstanceDao
+        val steps: List<StepViewDao>
+        val startedAt: LocalDateTime
+        val stage: ProcessInstanceStage
+        val version: Int
+     )
+
+     data class ProcessInstanceStage(
+        var isFinished: Boolean = false
+        var isAdmitted: Boolean = false
+     )
+
+     data class StepViewDao(
+        val id: String
+        val stepId: String
+        val eventId: String
+        val receivedAt: LocalDateTime
+        val references: List<ReferenceDao>
+     )
+    end note
+}
+
+cloud "Step Processing Phase" {
+    queue "business-process.step.events" as stepEvents
+
+    cloud "<size>BPM</size>" as BPM {
+     [StepTransformer] as transformer
+     [StepService] as processor
+
+     transformer -[hidden]down- processor
+    }
+
+    transformer -left-> stepEvents
+    stepEvents -left-> processor
+
+    events1 -down-> transformer
+    events2 -down-> transformer
+
+    processor -down--> stepDao :  Save new step /\n Set new processInstance id
+    stepDao -up-> processor : Retrieve parent/child steps
+
+    note right of stepEvents
+      record ProcessStep {
+        string configurationId;
+        string stepId;
+        string eventId;
+        array<Reference> references;
+        boolean isLast;
+        timestamp_ms receivedAt;
+      }
+    end note
+
+    note right of transformer
+        This component is responsible to
+        converting original event into steps
+    end note
+
+    note right of processor
+        This component is responsible for
+        joining newly received step with
+        other which may be related by it's
+        reference ids. Practically saying
+        it will fit new step into corresponding
+        place in business process
+    end note
+
+}
+
+
+cloud "Process Aggregation Phase" as PAP{
+
+    [ProcessStateAdmitTask] as admitTask
+    [ProcessExpiredAlert] as expiredAlert
+    [ProcessStateTask] as stateTask
+
+'   left to right direction
+    stepDao --> stateTask : Get newly assigned steps
+    stateTask --> processStateDao : Update state \n/ finish when last step is received
+    stateTask <-- processStateDao : Read current state
+
+    admitTask <-- processStateDao : Read current state
+    admitTask --> processStateDao : Set admitted state
+    admitTask <-- processConfigurationDao : Read expected time to finish
+
+    admitTask -down-> expiredAlert : Expired process instances
+
+    stateTask -[hidden]down-- admitTask
+
+    note right of stateTask
+        This component is responsible for
+        aggregating view, which represents current
+        state of business process. It retrieves
+        all newly assigned steps and attach it under process
+        process state view
+    end note
+
+    note top of admitTask
+        This component is responsible for
+        checking whether process finished (or still not)
+        in expected time window
+    end note
+}
+
+@enduml
+

@@ -1,0 +1,34 @@
+user_access_host: localhost
+user_access_port: 19092
+user_username: djeremy_user
+user_password:
+user_schema_registry_uri: http://localhost:19081
+
+server:
+  port: 9998
+
+spring.data.mongodb:
+  uri: mongodb://admin:admin@localhost:19217/bpm_db
+  auto-index-creation: true
+
+djeremy.kafka.system.monitor:
+  streams.config:
+    defaultValueSerde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
+    value.subject.name.strategy: io.confluent.kafka.serializers.subject.TopicRecordNameStrategy
+    processing-guarantee: exactly_once
+  v2:
+    configurations:
+      - id: processCreated
+        description: 'ProcessCreated not received withing expected time range'
+        steps:
+          - type: single
+            description: "Create Process"
+            topic: process.create.commands
+            schemaName: com.djeremy.avro.process.CreateProcess
+            eventIdSchemaPath: processId.value
+          - type: single
+            description: "Process Created"
+            topic: process.create.events
+            schemaName: com.djeremy.avro.process.ProcessCreated
+            indicateProcessFinished: true
+        expectToFinishIn: 30S

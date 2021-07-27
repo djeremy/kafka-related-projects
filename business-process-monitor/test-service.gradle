@@ -1,0 +1,40 @@
+sourceSets {
+    serviceTest {
+        kotlin.srcDir "$projectDir/tests/service/kotlin"
+        resources.srcDir "$projectDir/tests/service/resources"
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+idea {
+    module {
+        testSourceDirs += project.sourceSets.serviceTest.kotlin.srcDirs
+    }
+}
+
+configurations {
+    serviceTestImplementation.extendsFrom testImplementation
+    serviceTestRuntime.extendsFrom testRuntime
+}
+
+task serviceTest(type: Test) {
+    description = "Service Tests"
+    group = "verification"
+
+    testClassesDirs = sourceSets.serviceTest.output.classesDirs
+    classpath = sourceSets.serviceTest.runtimeClasspath
+
+    useJUnitPlatform()
+
+    testLogging {
+        events = ["started", "passed", "skipped", "failed"]
+        showStandardStreams = false
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
+        exceptionFormat = "FULL"
+    }
+}
+
+test.dependsOn(serviceTest)
