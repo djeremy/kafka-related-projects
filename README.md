@@ -6,5 +6,5 @@ related to common kafka libraries used previously by me on day-to-day basis,
 and some are ready to use solution related to kafka processing. 
 
 Currently, repo consists of:
-- [business process monitor](./business-process-monitor/README.md)
-- [kstream type safe branching]()
+- [**business process monitor**](./business-process-monitor/README.md)
+- [**KStream type safe branching**](./generic-type-splitter/README.md)
