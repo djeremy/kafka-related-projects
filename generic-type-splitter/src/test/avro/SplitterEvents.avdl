@@ -1,0 +1,18 @@
+@namespace("com.djeremy.avro.splitter")
+protocol SplitterEvents {
+
+	record SplitterTypeOne{
+		string id;
+	}
+
+	record SplitterTypeTwo{
+		string id;
+		string propertyTwo;
+	}
+
+	record SplitterTypeThree{
+		string id;
+		string propertyThree;
+	}
+
+}

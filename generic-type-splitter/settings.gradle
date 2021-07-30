@@ -1,0 +1,10 @@
+pluginManagement {
+	repositories {
+		mavenCentral()
+		gradlePluginPortal()
+		jcenter()
+		maven { url 'https://packages.confluent.io/maven/' }
+		maven { url 'https://jitpack.io' }
+	}
+}
+rootProject.name = 'generic-type-splitter'

@@ -1,0 +1,57 @@
+sourceSets {
+    unitTest {
+        kotlin.srcDir "$projectDir/tests/unit/kotlin"
+        resources.srcDir "$projectDir/tests/unit/resources"
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+idea {
+    module {
+        testSourceDirs += project.sourceSets.unitTest.kotlin.srcDirs
+    }
+}
+
+configurations {
+    unitTestImplementation.extendsFrom testImplementation
+    unitTestRuntime.extendsFrom testRuntime
+}
+//
+//def generateAvro = tasks.register("generateAvro", GenerateAvroJavaTask) {
+//    source("src/avro")
+//    outputDir = file("dest/avro")
+//}
+//
+//tasks.named("compileJava").configure {
+//    source(generateAvro)
+//}
+
+task unitTest(type: Test) {
+    description = "Unit Tests"
+    group = "verification"
+
+    testClassesDirs = sourceSets.unitTest.output.classesDirs
+    classpath = sourceSets.unitTest.runtimeClasspath
+
+    useJUnitPlatform()
+
+    testLogging {
+        events = ["started", "passed", "skipped", "failed"]
+        showStandardStreams = false
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
+        exceptionFormat = "FULL"
+    }
+}
+
+
+dependencies {
+    testImplementation 'org.apache.kafka:kafka-streams-test-utils:2.7.0'
+    testImplementation "org.spekframework.spek2:spek-dsl-jvm:2.0.10"
+    testImplementation 'io.mockk:mockk:1.4.1'
+    testImplementation 'org.assertj:assertj-core:3.20.2'
+}
+
+test.dependsOn(unitTest)

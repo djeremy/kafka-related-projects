@@ -1,0 +1,59 @@
+buildscript {
+    ext {
+        kotlinVersion = '1.4.31'
+        springBootVersion = '2.3.9.RELEASE'
+    }
+}
+
+plugins {
+    id "idea"
+    id 'java-library'
+    id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
+    id "com.github.davidmc24.gradle.plugin.avro" version "1.1.0"
+//    id "com.github.davidmc24.gradle.plugin.avro-base" version "1.1.0"
+}
+
+apply from: 'test-unit.gradle'
+
+// #########################################################
+// Dependencies
+// #########################################################
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven { url 'https://packages.confluent.io/maven/' }
+}
+
+configurations.all {
+    exclude group: 'org.slf4j', module: "slf4j-log4j12"
+}
+
+
+dependencies {
+    api 'org.apache.kafka:kafka-streams:2.7.0'
+    api 'org.apache.avro:avro:1.10.2'
+    api 'io.confluent:kafka-streams-avro-serde:6.2.0'
+}
+
+test {
+    useJunitPlatform{
+        includeEngines 'spek2'
+    }
+}
+// #########################################################
+// Other
+// #########################################################
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        freeCompilerArgs = ["-Xjsr305=strict"]
+        jvmTarget = "11"
+        apiVersion = "1.4"
+        languageVersion = "1.4"
+    }
+}
+
+tasks.named('wrapper') {
+    distributionType = Wrapper.DistributionType.ALL
+}
