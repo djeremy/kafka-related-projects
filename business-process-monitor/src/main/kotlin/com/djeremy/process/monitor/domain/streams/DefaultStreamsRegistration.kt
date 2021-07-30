@@ -17,7 +17,9 @@ class DefaultStreamsRegistration(
         stepStreamsRegistry.stopAllAndClean().run { log.info { "Stopping all running streams" } }
 
         transformations.forEach { topicTransformations ->
-            stepStreamsRegistry.add(topicTransformations, stepTransformationStreamBuilder.buildStreamFor(topicTransformations))
+            stepStreamsRegistry.add(topicTransformations,
+                stepTransformationStreamBuilder.buildStreamFor(topicTransformations)
+                    .also { it.logTopologies() })
         }
 
         stepStreamsRegistry.startAll().run { log.info { "Starting all streams" } }
@@ -49,4 +51,10 @@ class DefaultStreamsRegistration(
         applicationStreamRegistry.add(applicationId, kafkaStreams)
         applicationStreamRegistry.startByApplicationId(applicationId)
     }
+
+    private fun KafkaStreams.logTopologies() =
+        metrics().filterKeys { metricName -> metricName.name() == "topology-description" }.values
+            .forEach {
+                log.info("{}:\n{}", "topology-description", it.metricValue())
+            }
 }
