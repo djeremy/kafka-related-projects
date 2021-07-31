@@ -27,4 +27,3 @@ RUN chmod a+x docker/entrypoint.sh
 FROM ${BASE_IMAGE}:${BASE_IMAGE_TAG}
 WORKDIR /app
 COPY --from=build /workspace/docker/entrypoint.sh /workspace/app.jar ./
-ENTRYPOINT ["./entrypoint.sh"]

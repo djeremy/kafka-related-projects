@@ -19,7 +19,7 @@
         </layout>
     </appender>
 
-    <logger name="com.djeremy.process.monitor.domain.streams" level="DEBUG" additivity="false">
+    <logger name="com.djeremy.process.monitor.adapter.streams" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
     <root level="info">

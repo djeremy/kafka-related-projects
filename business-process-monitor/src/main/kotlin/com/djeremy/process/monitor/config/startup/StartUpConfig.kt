@@ -8,8 +8,8 @@ import com.djeremy.process.monitor.adapter.startup.MongoIndexStartup
 import com.djeremy.process.monitor.adapter.startup.StreamsStartup
 import com.djeremy.process.monitor.adapter.startup.lock.AtomicExecutor
 import com.djeremy.process.monitor.domain.process.ProcessConfigurationService
-import com.djeremy.process.monitor.domain.streams.application.ApplicationStreamDefinition
-import com.djeremy.process.monitor.domain.streams.StreamsRegistration
+import com.djeremy.process.monitor.adapter.streams.application.ApplicationStreamDefinition
+import com.djeremy.process.monitor.adapter.streams.StreamsRegistration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn

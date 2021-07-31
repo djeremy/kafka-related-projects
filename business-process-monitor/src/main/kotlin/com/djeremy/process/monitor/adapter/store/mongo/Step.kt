@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.repository.MongoRepository
 import java.time.LocalDateTime
 import java.util.UUID
 
-const val stepDaoColName = "steps_v2"
+const val stepDaoColName = "step"
 
 @Document(collection = stepDaoColName)
 open class StepDao(
@@ -17,13 +17,13 @@ open class StepDao(
     var id: String = UUID.randomUUID().toString(),
     val configurationId: String,
     val stepId: String,
-    val eventId: String, // careful with renaming used in index
-    val receivedAt: LocalDateTime, // careful with renaming used in index
+    val eventId: String,
+    val receivedAt: LocalDateTime,
     val references: List<ReferenceDao>,
     val isLast: Boolean? = null,
     @Indexed(sparse = true)
-    var processInstance: ProcessInstanceDao? = null, // careful with renaming used in index
-    var isNewlyInstanceAssigned: Boolean? = null // careful with renaming used in index
+    var processInstance: ProcessInstanceDao? = null,
+    var isNewlyInstanceAssigned: Boolean? = null
 ) {
 
     override fun equals(other: Any?): Boolean {

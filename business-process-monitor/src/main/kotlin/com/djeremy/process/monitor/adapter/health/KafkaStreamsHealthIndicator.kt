@@ -1,8 +1,8 @@
 package com.djeremy.process.monitor.adapter.health
 
-import com.djeremy.process.monitor.domain.streams.application.ApplicationStreamsRegistry
-import com.djeremy.process.monitor.domain.streams.CustomizedKafkaProperties
-import com.djeremy.process.monitor.domain.streams.step.StepStreamsRegistry
+import com.djeremy.process.monitor.adapter.streams.application.ApplicationStreamsRegistry
+import com.djeremy.process.monitor.adapter.streams.CustomizedKafkaProperties
+import com.djeremy.process.monitor.adapter.streams.step.StepStreamsRegistry
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.streams.KafkaStreams

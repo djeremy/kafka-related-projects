@@ -1,10 +1,10 @@
 package com.djeremy.process.monitor.adapter.startup
 
 import com.djeremy.process.monitor.domain.process.ProcessConfigurationService
-import com.djeremy.process.monitor.domain.streams.application.ApplicationStreamDefinition
-import com.djeremy.process.monitor.domain.streams.step.DefaultStepTransformer
-import com.djeremy.process.monitor.domain.streams.StreamsRegistration
-import com.djeremy.process.monitor.domain.streams.TopicTransformations
+import com.djeremy.process.monitor.adapter.streams.application.ApplicationStreamDefinition
+import com.djeremy.process.monitor.adapter.streams.step.DefaultStepTransformer
+import com.djeremy.process.monitor.adapter.streams.StreamsRegistration
+import com.djeremy.process.monitor.adapter.streams.TopicTransformations
 import mu.KotlinLogging
 import org.springframework.beans.factory.InitializingBean
 

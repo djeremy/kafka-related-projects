@@ -10,7 +10,7 @@ const val stepConfigurationDaoColName = "step_configuration"
 
 @Document(stepConfigurationDaoColName)
 @TypeAlias("single")
-open class StepConfigurationDaoV2(
+open class StepConfigurationDao(
         @Id
         var id: String = UUID.randomUUID().toString(),
         val configurationId: String,
@@ -24,7 +24,7 @@ open class StepConfigurationDaoV2(
 )
 
 @TypeAlias("multiExclusive")
-class MultiExclusiveStepConfigurationDaoV2(
+class MultiExclusiveStepConfigurationDao(
         id: String = UUID.randomUUID().toString(),
         configurationId: String,
         description: String? = null,
@@ -38,12 +38,12 @@ class MultiExclusiveStepConfigurationDaoV2(
         val alternativeEventIdSchemaPath: String? = null,
         val alternativeReferenceIdsSchemaPaths: List<String> = emptyList(),
         val alternativeIsLast: Boolean = false
-) : StepConfigurationDaoV2(id, configurationId, description, topic, isFirst, schemaName, eventIdSchemaPath, referenceIdSchemaPaths, isLast)
+) : StepConfigurationDao(id, configurationId, description, topic, isFirst, schemaName, eventIdSchemaPath, referenceIdSchemaPaths, isLast)
 
-interface StepConfigurationMongoRepository : MongoRepository<StepConfigurationDaoV2, String>{
-        fun findByConfigurationId(configurationId: String): List<StepConfigurationDaoV2>
+interface StepConfigurationMongoRepository : MongoRepository<StepConfigurationDao, String>{
+        fun findByConfigurationId(configurationId: String): List<StepConfigurationDao>
 }
 
 // TODO think about inheritance? :)
 // in worst case can be applied: https://medium.com/@mladen.maravic/spring-data-mongodb-my-take-on-inheritance-support-102361c08e3d
-interface ExclusiveMultiStepConfigurationDaoV2Repository : MongoRepository<MultiExclusiveStepConfigurationDaoV2, String>
+interface ExclusiveMultiStepConfigurationDaoV2Repository : MongoRepository<MultiExclusiveStepConfigurationDao, String>

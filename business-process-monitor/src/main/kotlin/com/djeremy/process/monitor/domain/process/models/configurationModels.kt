@@ -12,6 +12,8 @@ interface StepConfigurationModel {
 
     fun getId(): StepId
 
+    fun getDescription(): String?
+
     fun getConfigurationId(): ProcessConfigurationId
 
     fun shouldAccept(event: GenericRecord): Boolean
@@ -25,14 +27,14 @@ interface StepConfigurationModel {
     fun hasLastCondition(): Boolean
 
     // in the future we can think about some more complex process
-    // of indicating whether process has finished or not.
+    // of indicating whether step is last or not.
     fun checkIfLast(event: GenericRecord): Boolean
 }
 
 abstract class AbstractStepModel(
         private val id: StepId,
         private val configurationId: ProcessConfigurationId,
-        val description: String?,
+        private val description: String?,
         private val topic: String,
         val schemaName: String,
         val eventIdSchemaPath: String?,
@@ -46,6 +48,8 @@ abstract class AbstractStepModel(
     override fun getTopic(): String = topic
 
     override fun getId(): StepId = id
+
+    override fun getDescription(): String? = description
 
     override fun getConfigurationId(): ProcessConfigurationId = configurationId
 

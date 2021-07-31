@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.validation.annotation.Validated
-import com.djeremy.process.monitor.domain.streams.ApplicationStreamKafkaProperties as ApplicationStreamKafkaPropertiesModel
+import com.djeremy.process.monitor.adapter.streams.ApplicationStreamKafkaProperties as ApplicationStreamKafkaPropertiesModel
 
 @Configuration
 @EnableConfigurationProperties

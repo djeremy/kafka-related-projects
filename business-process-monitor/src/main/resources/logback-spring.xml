@@ -22,7 +22,7 @@
     </springProfile>
 
     <springProfile name="local">
-        <logger name="com.djeremy.process.monitor.domain.streams" level="TRACE" additivity="false">
+        <logger name="com.djeremy.process.monitor.adapter.streams" level="TRACE" additivity="false">
             <appender-ref ref="CONSOLE"/>
         </logger>
         <root level="info">

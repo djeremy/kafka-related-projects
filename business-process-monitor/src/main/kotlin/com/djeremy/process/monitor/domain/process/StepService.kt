@@ -67,7 +67,7 @@ class DefaultStepService(
                     } else {
                         val processInstanceId = ancestors.first().processInstanceId!!
                         step.joinDescendants(processInstanceId)
-                        step.getAncestors().forEach { it.joinAncestors(processInstanceId) }
+                        step.getNotYetAssignedAncestors().forEach { it.joinAncestors(processInstanceId) }
                     }
                 }
             }.map {success() }.getOrElse { failed(it.toCause()) }
@@ -83,7 +83,7 @@ class DefaultStepService(
         if (processInstanceId == null) {
             assignNewInstanceId(newProcessInstanceId)
             repository.save(this)
-            val childSteps = getDescendants()
+            val childSteps = getNotYetAssignedDescendants()
             childSteps.forEach { it.joinDescendants(newProcessInstanceId) }
         }
     }
@@ -92,13 +92,13 @@ class DefaultStepService(
         if (processInstanceId == null) {
             assignNewInstanceId(newProcessInstanceId)
             repository.save(this)
-            val parents = getAncestors()
+            val parents = getNotYetAssignedAncestors()
             parents.forEach { it.joinAncestors(newProcessInstanceId) }
         }
     }
 
-    private fun Step.getAncestors(): List<Step> = repository.getWithoutProcessInstanceBy(configurationId.value, eventId)
-    private fun Step.getDescendants(): List<Step> = repository.getWithoutProcessInstanceBy(configurationId.value, references.map { it.referenceId })
+    private fun Step.getNotYetAssignedAncestors(): List<Step> = repository.getWithoutProcessInstanceBy(configurationId.value, eventId)
+    private fun Step.getNotYetAssignedDescendants(): List<Step> = repository.getWithoutProcessInstanceBy(configurationId.value, references.map { it.referenceId })
 
     private fun Step.isFirst(): Boolean = stepConfigurationRepository.getById(stepId)?.isFirst()
             ?: throw RuntimeException("Cannot find Configuration for Id $stepId")
