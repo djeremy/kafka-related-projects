@@ -20,7 +20,7 @@ class RecordFactory(
     private val client = MockSchemaRegistryClient()
     private val topicNameStrategy = RecordNameStrategy()
 
-    val commonSerde = SpecificAvroSerde<SpecificRecord>(client)
+    private val commonSerde = SpecificAvroSerde<SpecificRecord>(client)
     val commonGenericSerde = GenericAvroSerde(client)
 
     init {

@@ -25,7 +25,7 @@ import org.apache.kafka.streams.kstream.Predicate
  * will be executed on corresponding branched node after KStream#branch operation.
  *
  */
-class GenericTypeSplitter(private val specifics: List<SpecificNode<GenericRecord>>) {
+class TypeSafeSplitter(private val specifics: List<SpecificNode<GenericRecord>>) {
 
     fun split(stream: KStream<String, GenericRecord>): Array<KStream<String, GenericRecord>> {
         return stream.branch(*getPredicates().toTypedArray()).zip(specifics)
@@ -73,7 +73,7 @@ class GenericTypeSplitter(private val specifics: List<SpecificNode<GenericRecord
     }
 
     companion object {
-        fun build(operations: GenericTypeSplitterBuilder.() -> Unit) = with(GenericTypeSplitterBuilder()) {
+        fun build(operations: TypeSafeSplitterBuilder.() -> Unit) = with(TypeSafeSplitterBuilder()) {
             operations()
             build()
         }

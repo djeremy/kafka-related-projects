@@ -3,8 +3,8 @@ package com.djeremy.splitter
 import com.djeremy.avro.splitter.SplitterTypeOne
 import com.djeremy.avro.splitter.SplitterTypeThree
 import com.djeremy.avro.splitter.SplitterTypeTwo
-import com.djeremy.splitter.GenericTypeSplitter.Companion.build
-import com.djeremy.splitter.GenericTypeSplitter.SpecificNode.Companion.whenIsInstanceOf
+import com.djeremy.splitter.TypeSafeSplitter.Companion.build
+import com.djeremy.splitter.TypeSafeSplitter.SpecificNode.Companion.whenIsInstanceOf
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.StreamsBuilder
@@ -43,7 +43,7 @@ class GenericTypeSplitterTest : Spek({
 
     fun configureDriver(
         inputTopic: String,
-        genericTypeSplitter: GenericTypeSplitter,
+        typeSafeSplitter: TypeSafeSplitter,
         outputTopics: List<String>
     ): TopologyTestDriver =
         with(StreamsBuilder()) {
@@ -52,7 +52,7 @@ class GenericTypeSplitterTest : Spek({
                 Consumed.with(Serdes.String(), recordFactory.commonGenericSerde)
             )
 
-            genericTypeSplitter.split(stream).zip(outputTopics).forEach {
+            typeSafeSplitter.split(stream).zip(outputTopics).forEach {
                 it.first.to(it.second, Produced.with(Serdes.String(), recordFactory.commonGenericSerde))
             }
 

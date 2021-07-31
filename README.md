@@ -7,4 +7,4 @@ and some are ready to use solution related to kafka processing.
 
 Currently, repo consists of:
 - [**business process monitor**](./business-process-monitor/README.md)
-- [**KStream type safe branching**](./generic-type-splitter/README.md)
+- [**KStream type safe branching**](./type-safe-splitter/README.md)
