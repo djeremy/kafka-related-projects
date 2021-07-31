@@ -4,7 +4,7 @@ import com.djeremy.avro.splitter.SplitterTypeOne
 import com.djeremy.avro.splitter.SplitterTypeThree
 import com.djeremy.avro.splitter.SplitterTypeTwo
 import com.djeremy.splitter.GenericTypeSplitter.Companion.build
-import com.djeremy.splitter.GenericTypeSplitter.SpecificNode.Companion.fromSchema
+import com.djeremy.splitter.GenericTypeSplitter.SpecificNode.Companion.whenIsInstanceOf
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.StreamsBuilder
@@ -31,11 +31,11 @@ class GenericTypeSplitterTest : Spek({
     val newValue by memoized { "new value" }
     val splitterTestInstance by memoized(CachingMode.TEST) {
         build {
-            branchNext(fromSchema(SplitterTypeOne()))
-            branchNext(fromSchema(SplitterTypeTwo()) {
+            branch(whenIsInstanceOf(SplitterTypeOne()))
+            branch(whenIsInstanceOf(SplitterTypeTwo()) {
                 mapValues { value -> SplitterTypeThree(value.getId(), newValue) }
             })
-            branchNext(fromSchema(SplitterTypeThree()) {
+            branch(whenIsInstanceOf(SplitterTypeThree()) {
                 mapValues { value -> value.setPropertyThree(newValue); value }
             })
         }
@@ -52,7 +52,7 @@ class GenericTypeSplitterTest : Spek({
                 Consumed.with(Serdes.String(), recordFactory.commonGenericSerde)
             )
 
-            genericTypeSplitter.executeSplit(stream).zip(outputTopics).forEach {
+            genericTypeSplitter.split(stream).zip(outputTopics).forEach {
                 it.first.to(it.second, Produced.with(Serdes.String(), recordFactory.commonGenericSerde))
             }
 

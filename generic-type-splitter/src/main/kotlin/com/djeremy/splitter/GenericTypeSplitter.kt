@@ -27,7 +27,7 @@ import org.apache.kafka.streams.kstream.Predicate
  */
 class GenericTypeSplitter(private val specifics: List<SpecificNode<GenericRecord>>) {
 
-    fun executeSplit(stream: KStream<String, GenericRecord>): Array<KStream<String, GenericRecord>> {
+    fun split(stream: KStream<String, GenericRecord>): Array<KStream<String, GenericRecord>> {
         return stream.branch(*getPredicates().toTypedArray()).zip(specifics)
             .map { (stream, branchNode) ->
                 val nextOperation = branchNode.transformation
@@ -46,13 +46,13 @@ class GenericTypeSplitter(private val specifics: List<SpecificNode<GenericRecord
     ) {
 
         companion object {
-            fun <T : GenericRecord> fromSchema(instance: T): SpecificNode<T> {
+            fun <T : GenericRecord> whenIsInstanceOf(instance: T): SpecificNode<T> {
                 return SpecificNode(
                     instance.schema,
                     { _, value -> value.schema.isCompatible(instance.schema) }) { this as KStream<String, GenericRecord> }
             }
 
-            fun <T : GenericRecord> fromSchema(
+            fun <T : GenericRecord> whenIsInstanceOf(
                 instance: T,
                 furtherTransformation: (KStream<String, T>.() -> KStream<String, GenericRecord>)
             ): SpecificNode<T> {
@@ -72,13 +72,6 @@ class GenericTypeSplitter(private val specifics: List<SpecificNode<GenericRecord
         }
     }
 
-    /**
-     * Please use this method to build GenericTypeSplitter with all necessary processing information.
-     * DSL syntax allowing in declarative way define flow of branching and sentential operations.
-     *
-     * Please node, that order of execution will preserve order of definition.
-     *
-     */
     companion object {
         fun build(operations: GenericTypeSplitterBuilder.() -> Unit) = with(GenericTypeSplitterBuilder()) {
             operations()

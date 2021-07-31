@@ -2,13 +2,18 @@
 
 ## How to use splitter
 
-To create splitter please use available builder method:
+To create splitter please use available builder method.
 
 ```kotlin
 GenericTypeSplitter.build {
     branchNext(/*define operation here*/)
 }
 ```
+
+Please use this method to build GenericTypeSplitter with all necessary processing information.
+DSL syntax allowing in declarative way define flow of branching and sentential operations.
+
+Please node, that order of execution will preserve order of definition.
 
 [GenericTypeSplitterBuilder](./src/main/kotlin/com/djeremy/splitter/GenericTypeSplitterBuilder.kt) contains
 `branchNext` method allowing us to configure Type condition and further type safe operation performing on that type.

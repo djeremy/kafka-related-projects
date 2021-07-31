@@ -7,7 +7,7 @@ We can dynamically describe such process through configuration options and defin
 
 This doc contains: 
 - [**Overview section**](#overview)
-- [**API description and configuration**](#api-v2)
+- [**API description and configuration**](#api)
 - [**Howto: local setup**](#how-to-run-locally)
 
 ## Overview
@@ -25,7 +25,7 @@ in the way, that configuration is manipulated though REST or Kafka interfaces.
 Current initialization flow is depicted below:
 ![ApplicationInitializationFlow](./diagrams/4.initialization-phase-sequence.png)
 
-## API V2
+## API
 
 ### Description of configuration:
 | Name              |Description                                    | Type      |Example
