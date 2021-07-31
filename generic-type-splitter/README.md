@@ -6,7 +6,7 @@ To create splitter please use available builder method.
 
 ```kotlin
 GenericTypeSplitter.build {
-    branchNext(/*define operation here*/)
+    branch(/*define operation here*/)
 }
 ```
 
@@ -16,18 +16,18 @@ DSL syntax allowing in declarative way define flow of branching and sentential o
 Please node, that order of execution will preserve order of definition.
 
 [GenericTypeSplitterBuilder](./src/main/kotlin/com/djeremy/splitter/GenericTypeSplitterBuilder.kt) contains
-`branchNext` method allowing us to configure Type condition and further type safe operation performing on that type.
-`branchNext` requires SpecificNode instance. Please reference below snippet for more details:
+`branch` method allowing us to configure Type condition and further type safe operation performing on that type.
+`branch` requires SpecificNode instance. Please reference below snippet for more details:
 
 ```kotlin
 // only branch to separate stream
-branchNext(fromSchema(SplitterTypeOne()))
+branch(whenIsInstanceOf(SplitterTypeOne()))
 // branch and change type
-branchNext(fromSchema(SplitterTypeTwo()) {
+branch(whenIsInstanceOf(SplitterTypeTwo()) {
     mapValues { value -> SplitterTypeThree(value.getId(), newValue) }
 })
 // branch and mutate
-branchNext(fromSchema(SplitterTypeThree()) {
+branch(whenIsInstanceOf(SplitterTypeThree()) {
     mapValues { value -> value.setPropertyThree(newValue); value }
 })
 
