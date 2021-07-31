@@ -20,7 +20,7 @@ fun `given random properties with given number of steps`(@Suppress("SameParamete
 fun `given random step configuration properties`(isLast: Boolean = false): SingleStepConfiguration = SingleStepConfiguration().apply {
     type = "single"
     description = "description"
-    schemaName = fakeValueService.bothify("wordldjeremy.something.#######")
+    schemaName = fakeValueService.bothify("jeremy.something.#######")
     topic = "topic" + faker.bothify("?????")
     eventIdSchemaPath = "id.value"
     indicateProcessFinished = isLast
