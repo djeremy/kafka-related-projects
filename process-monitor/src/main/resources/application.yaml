@@ -1,0 +1,82 @@
+spring.application.name: "process-monitor"
+
+djeremy.kafka.brokers: ${user_access_host}:${user_access_port}
+djeremy.kafka.schema.registry.url: ${user_schema_registry_uri}
+djeremy.kafka.streams.auto-offset-reset: latest
+
+spring.data.mongodb:
+  auto-index-creation: true
+
+spring:
+  profiles:
+    active: local
+
+  kafka:
+    bootstrap-servers: ${djeremy.kafka.brokers}
+    client-id: process-monitor
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.streams.serdes.avro.GenericAvroSerializer
+    consumer:
+      group-id: process-monitor
+      auto-offset-reset: ${djeremy.kafka.streams.auto-offset-reset}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.streams.serdes.avro.GenericAvroDeserializer
+      enable-auto-commit: true
+      properties:
+        allow.auto.create.topics: true
+        specific.avro.reader: true
+    properties:
+      allow.auto.create.topics: true
+      value.subject.name.strategy: io.confluent.kafka.serializers.subject.RecordNameStrategy
+      auto.register.schemas: true
+      schema.registry.url: ${djeremy.kafka.schema.registry.url}
+    streams:
+      application-id: process-monitor
+      properties:
+        default.value.serde: io.confluent.kafka.streams.serdes.avro.GenericAvroSerde
+        default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        schema.registry.url: ${djeremy.kafka.schema.registry.url}
+        basic.auth.user.info: ${djeremy.kafka.basic.auth.user.info}
+        basic.auth.credentials.source: ${djeremy.kafka.basic.auth.credentials.source}
+        producer.compression.type: zstd
+
+server:
+  port: 8080
+  error.whitelabel.enabled: false
+
+management:
+  endpoint:
+    health:
+      show-details: ALWAYS
+  endpoints:
+    web:
+      exposure:
+        include: info,metrics,health,prometheus
+
+---
+djeremy.kafka.step.topic: business-process.step.events
+
+djeremy.kafka.system.monitor:
+  streams.config:
+    defaultValueSerde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
+    value.subject.name.strategy: io.confluent.kafka.serializers.subject.TopicRecordNameStrategy
+    processing-guarantee: exactly_once
+  v2:
+    configurations:
+      - id: processCreated
+        description: 'ProcessCreated not received withing expected time range'
+        steps:
+          - type: single
+            description: "Create Process"
+            topic: process.create.commands
+            schemaName: com.djeremy.avro.process.CreateProcess
+            eventIdSchemaPath: processId.value
+          - type: single
+            description: "Process Created"
+            topic: process.create.events
+            schemaName: com.djeremy.avro.process.ProcessCreated
+            indicateProcessFinished: true
+        expectToFinishIn: 30S
+
+process.instance.state.task.lag.duration: 3M

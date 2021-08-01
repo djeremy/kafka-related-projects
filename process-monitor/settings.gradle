@@ -1,0 +1,15 @@
+pluginManagement {
+	repositories {
+		gradlePluginPortal()
+		jcenter()
+		maven { url 'https://packages.confluent.io/maven/' }
+		maven { url 'https://jitpack.io' }
+		maven {
+			name "JCenter Gradle Plugins"
+			url "https://dl.bintray.com/gradle/gradle-plugins"
+		}
+	}
+}
+rootProject.name = 'process-monitor'
+
+include 'publisher'
