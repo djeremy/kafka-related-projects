@@ -54,7 +54,7 @@ startUp --> registration: Register application streams
 note left
     Register streams which processes
     steps received from topic:
-    <i>business-process.step.events</i>
+    <i>process.step.events</i>
 end note
 
 startUp --> processService : Read all configurations

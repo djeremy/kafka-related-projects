@@ -18,52 +18,10 @@ cloud Infrastructure as INF{
 
      stepDao -[hidden]down- processConfigurationDao
     }
-
-    note bottom of stepDao
-     class StepDao {
-        var id: String
-        val configurationId: String
-        val stepId: String
-        val eventId: String
-        val receivedAt: LocalDateTime
-        val references: List<ReferenceDao>
-        val isLast: Boolean
-        var processInstance: ProcessInstanceDao
-        var isNewlyInstanceAssigned: Boolean
-     }
-
-     data class ReferenceDao(
-        val referenceId: String
-        val referenceName: String
-     )
-    end note
-
-    note bottom of processStateDao
-     class ProcessInstanceStateDao(
-        val instance: ProcessInstanceDao
-        val steps: List<StepViewDao>
-        val startedAt: LocalDateTime
-        val stage: ProcessInstanceStage
-        val version: Int
-     )
-
-     data class ProcessInstanceStage(
-        var isFinished: Boolean = false
-        var isAdmitted: Boolean = false
-     )
-
-     data class StepViewDao(
-        val id: String
-        val stepId: String
-        val eventId: String
-        val receivedAt: LocalDateTime
-        val references: List<ReferenceDao>
-     )
-    end note
 }
 
 cloud "Step Processing Phase" {
-    queue "business-process.step.events" as stepEvents
+    queue "process.step.events" as stepEvents
 
     cloud "<size>BPM</size>" as BPM {
      [StepTransformer] as transformer
@@ -103,7 +61,7 @@ cloud "Step Processing Phase" {
         other which may be related by it's
         reference ids. Practically saying
         it will fit new step into corresponding
-        place in business process
+        place in process instance
     end note
 
 }
@@ -131,7 +89,7 @@ cloud "Process Aggregation Phase" as PAP{
     note right of stateTask
         This component is responsible for
         aggregating view, which represents current
-        state of business process. It retrieves
+        state of ongoing process. It retrieves
         all newly assigned steps and attach it under process
         process state view
     end note
