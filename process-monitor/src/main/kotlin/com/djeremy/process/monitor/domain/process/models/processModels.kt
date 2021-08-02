@@ -1,36 +1,36 @@
 package com.djeremy.process.monitor.domain.process.models
 
-import com.djeremy.process.monitor.domain.process.models.ProcessInstanceStages.ADMITTED
-import com.djeremy.process.monitor.domain.process.models.ProcessInstanceStages.FINISHED
-import com.djeremy.process.monitor.domain.process.models.ProcessInstanceStages.NEW
+import com.djeremy.process.monitor.domain.process.models.ProcessInstanceStages.*
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalDateTime.now
-import java.util.UUID
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 inline class StepId(val value: String)
 inline class ProcessConfigurationId(val value: String)
 inline class ProcessInstanceId(val value: String)
 
 data class ProcessConfigurationWithSteps(
-        val process: ProcessConfiguration,
-        val steps: List<StepConfigurationModel>
+    val process: ProcessConfiguration,
+    val steps: List<StepConfigurationModel>
 )
 
 data class ProcessConfiguration(
-        val id: ProcessConfigurationId,
-        val description: String,
-        val duration: Duration
+    val id: ProcessConfigurationId,
+    val description: String,
+    val duration: Duration
 )
 
 data class Step(
-        val id: String,
-        val configurationId: ProcessConfigurationId,
-        val stepId: StepId,
-        val eventId: String,
-        val receivedAt: LocalDateTime,
-        val references: List<Reference>,
-        val isLast: Boolean) {
+    val id: String,
+    val configurationId: ProcessConfigurationId,
+    val stepId: StepId,
+    val eventId: String,
+    val receivedAt: LocalDateTime,
+    val references: List<Reference>,
+    val isLast: Boolean
+) {
 
     var isNewlyAssigned: Boolean? = null
         private set
@@ -63,24 +63,24 @@ data class Step(
 
 data class ProcessInstance(val id: ProcessInstanceId, val configurationId: ProcessConfigurationId)
 
-data class ProcessInstanceState (
-        val instance: ProcessInstance,
-        val steps: List<StepView>,
-        val startedAt: LocalDateTime,
-        val stages: List<ProcessInstanceStages>,
-        val version: Int = 0
+data class ProcessInstanceState(
+    val instance: ProcessInstance,
+    val steps: List<StepView>,
+    val startedAt: LocalDateTime,
+    val stages: List<ProcessInstanceStages>,
+    val version: Int = 0
 ) {
 
     fun setSteps(newSteps: List<StepView>): ProcessInstanceState = ProcessInstanceState(
-            instance, newSteps, startedAt, stages, version
+        instance, newSteps, startedAt, stages, version
     )
 
     fun finish(): ProcessInstanceState = ProcessInstanceState(
-            instance, steps, startedAt, stages + FINISHED, version
+        instance, steps, startedAt, stages + FINISHED, version
     )
 
     fun admit(): ProcessInstanceState = ProcessInstanceState(
-            instance, steps, startedAt, stages + ADMITTED, version
+        instance, steps, startedAt, stages + ADMITTED, version
     )
 
     fun isFinished(): Boolean = stages.contains(FINISHED)
@@ -89,7 +89,7 @@ data class ProcessInstanceState (
 
     companion object {
         fun createNew(instance: ProcessInstance, stepViews: List<StepView>) = ProcessInstanceState(
-                instance, stepViews, now(), listOf(NEW)
+            instance, stepViews, now(), listOf(NEW)
         )
     }
 }
@@ -99,21 +99,33 @@ enum class ProcessInstanceStages {
 }
 
 data class StepView(
-        val id: String,
-        val stepId: StepId,
-        val eventId: String,
-        val receivedAt: LocalDateTime,
-        val references: List<Reference>
-)/*{
+    val id: String,
+    val stepId: StepId,
+    val eventId: String,
+    val receivedAt: LocalDateTime,
+    val references: List<Reference>
+) {
 
-    fun
-}*/
+    fun formatAccordingTo(stepConfiguration: StepConfigurationModel): String {
+        val referencesFormatted = references.joinToString(", ", "[", "]") {
+            "refId=\"${it.referenceId}\", refName=\"${it.referenceName}\""
+        }
+        return """
+                    Step[
+                        eventId="+${eventId}"
+                        description="${stepConfiguration.getDescription()}"
+                        receivedAt= "${receivedAt.format(DateTimeFormatter.ISO_DATE_TIME)}
+                        references=${referencesFormatted}
+                    ]
+                """.trimIndent()
+    }
+}
 
 data class Reference(
-        val referenceId: String,
-        val referenceName: String = "Not implemented yet"
+    val referenceId: String,
+    val referenceName: String = "Not implemented yet"
 )
 
 inline class ProcessInstanceStateProjection(
-        val processInstance: ProcessInstance
+    val processInstance: ProcessInstance
 )
