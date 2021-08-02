@@ -1,4 +1,4 @@
-# generic-type-splitter
+# type-safe-splitter
 
 ## How to use splitter
 
