@@ -104,7 +104,10 @@ data class StepView(
         val eventId: String,
         val receivedAt: LocalDateTime,
         val references: List<Reference>
-)
+)/*{
+
+    fun
+}*/
 
 data class Reference(
         val referenceId: String,

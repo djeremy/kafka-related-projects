@@ -1,16 +1,16 @@
 package com.djeremy.process.monitor.adapter.startup
 
 import com.djeremy.process.monitor.domain.process.ProcessConfigurationService
-import com.djeremy.process.monitor.adapter.streams.application.ApplicationStreamDefinition
-import com.djeremy.process.monitor.adapter.streams.step.DefaultStepTransformer
+import com.djeremy.process.monitor.adapter.streams.StreamDefinition
+import com.djeremy.process.monitor.domain.transformation.DefaultStepTransformer
 import com.djeremy.process.monitor.adapter.streams.StreamsRegistration
-import com.djeremy.process.monitor.adapter.streams.TopicTransformations
+import com.djeremy.process.monitor.domain.transformation.TopicTransformations
 import mu.KotlinLogging
 import org.springframework.beans.factory.InitializingBean
 
 class StreamsStartup(
     private val configurationService: ProcessConfigurationService,
-    private val applicationStreamsDefinitions: List<ApplicationStreamDefinition>,
+    private val applicationStreamsDefinitions: List<StreamDefinition>,
     private val streamsRegistration: StreamsRegistration
 ) : InitializingBean {
     private val logger = KotlinLogging.logger {}
@@ -22,7 +22,7 @@ class StreamsStartup(
 
         logger.info { "Initializing application streams" }
         applicationStreamsDefinitions.forEach {
-            streamsRegistration.register(it.applicationId, it.stream)
+            streamsRegistration.register(it.internalApplicationId, it.stream)
         }
     }
 

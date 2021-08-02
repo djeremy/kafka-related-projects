@@ -1,21 +1,19 @@
-package com.djeremy.process.monitor.adapter.streams.step
+package com.djeremy.process.monitor.domain.transformation
 
 import com.djeremy.avro.business.process.monitor.ProcessStep
 import com.djeremy.process.monitor.domain.process.models.Reference
 import com.djeremy.process.monitor.domain.process.models.StepConfigurationModel
 import org.apache.avro.generic.GenericRecord
-import org.apache.kafka.streams.KeyValue
-import org.apache.kafka.streams.KeyValue.pair
 import java.time.Instant.now
 import com.djeremy.avro.business.process.monitor.Reference as AvroReference
 
 class DefaultStepTransformer(
-        private val stepConfigurationModel: StepConfigurationModel
+    private val stepConfigurationModel: StepConfigurationModel
 ) : ConditionalStepTransformer, StepConfigurationModel by stepConfigurationModel {
 
     // Ideally this method should return Model or ErrorModel, and catch possible exceptions
     // inside that may be thrown inside this method.
-    override fun transform(key: String, event: GenericRecord): KeyValue<String, ProcessStep> {
+    override fun transform(key: String, event: GenericRecord): Pair<String, ProcessStep> {
         val eventId = getEventId(key, event)
         val references = getReferences(event).takeIf { it.isNotEmpty() } ?: listOf(Reference(eventId, "eventId"))
         val isLast = checkIfLast(event)
@@ -30,6 +28,6 @@ class DefaultStepTransformer(
             this.setIsLast(isLast)
         }
 
-        return pair(getConfigurationId().value, processStep)
+        return getConfigurationId().value to processStep
     }
 }

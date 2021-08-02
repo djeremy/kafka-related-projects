@@ -3,16 +3,16 @@ package com.djeremy.process.monitor.config.domain
 import com.djeremy.process.monitor.adapter.properties.ApplicationStreamKafkaProperties
 import com.djeremy.process.monitor.adapter.properties.toModel
 import com.djeremy.process.monitor.domain.process.StepService
-import com.djeremy.process.monitor.adapter.streams.application.ApplicationStreamDefinition
+import com.djeremy.process.monitor.adapter.streams.StreamDefinition
 import com.djeremy.process.monitor.adapter.streams.application.ApplicationStreamsRegistry
 import com.djeremy.process.monitor.adapter.streams.CustomizedKafkaProperties
 import com.djeremy.process.monitor.adapter.streams.application.DefaultApplicationStreamsRegistry
 import com.djeremy.process.monitor.adapter.streams.step.DefaultStepStreamsRegistry
 import com.djeremy.process.monitor.adapter.streams.DefaultStreamsRegistration
-import com.djeremy.process.monitor.adapter.streams.ProcessStepStreamDefinitionFactory
 import com.djeremy.process.monitor.adapter.streams.step.StepStreamsRegistry
-import com.djeremy.process.monitor.adapter.streams.StepTransformationStreamBuilder
+import com.djeremy.process.monitor.adapter.streams.step.StepTransformationStreamBuilder
 import com.djeremy.process.monitor.adapter.streams.StreamsRegistration
+import com.djeremy.process.monitor.adapter.streams.process.ProcessStepStreamDefinitionFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.context.annotation.Bean
@@ -48,5 +48,5 @@ class StreamsConfiguration {
             @Value("\${djeremy.kafka.step.topic}") stepTopic: String,
             customizedKafkaProperties: CustomizedKafkaProperties,
             stepService: StepService
-    ): ApplicationStreamDefinition = ProcessStepStreamDefinitionFactory(stepTopic, stepTopic, customizedKafkaProperties, stepService).build()
+    ): StreamDefinition = ProcessStepStreamDefinitionFactory(stepTopic, stepTopic, customizedKafkaProperties, stepService).build()
 }

@@ -2,8 +2,16 @@ package com.djeremy.process.monitor.adapter.streams
 
 import com.djeremy.process.monitor.adapter.streams.application.ApplicationStreamsRegistry
 import com.djeremy.process.monitor.adapter.streams.step.StepStreamsRegistry
+import com.djeremy.process.monitor.adapter.streams.step.StepTransformationStreamBuilder
+import com.djeremy.process.monitor.domain.transformation.TopicTransformations
 import mu.KotlinLogging.logger
 import org.apache.kafka.streams.KafkaStreams
+
+interface StreamsRegistration {
+    fun initialize(transformations: Set<TopicTransformations>)
+    fun register(transformations: TopicTransformations)
+    fun register(applicationId: String, kafkaStreams: KafkaStreams)
+}
 
 class DefaultStreamsRegistration(
     private val stepStreamsRegistry: StepStreamsRegistry,

@@ -1,6 +1,7 @@
 package com.djeremy.process.monitor.adapter.streams.application
 
 import com.djeremy.process.monitor.adapter.streams.KeyBasedStreamsRegistry
+import com.djeremy.process.monitor.adapter.streams.StreamDefinition
 import org.apache.kafka.streams.KafkaStreams
 import org.springframework.beans.factory.DisposableBean
 
@@ -17,7 +18,7 @@ open class DefaultApplicationStreamsRegistry : ApplicationStreamsRegistry, Dispo
 
     override fun getAllDeclaredApplicationIds(): Set<String> = registry.getKeys()
 
-    override fun getAllKafkaStreams(): List<ApplicationStreamDefinition> = registry.getStreams()
+    override fun getAllKafkaStreams(): List<StreamDefinition> = registry.getStreams()
 
     override fun stopAllAndClean() = registry.stopAll()
 

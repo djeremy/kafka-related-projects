@@ -1,8 +1,8 @@
 package com.djeremy.process.monitor.adapter.streams.step
 
 import com.djeremy.process.monitor.adapter.streams.KeyBasedStreamsRegistry
-import com.djeremy.process.monitor.adapter.streams.TopicTransformations
-import com.djeremy.process.monitor.adapter.streams.application.ApplicationStreamDefinition
+import com.djeremy.process.monitor.domain.transformation.TopicTransformations
+import com.djeremy.process.monitor.adapter.streams.StreamDefinition
 import org.apache.kafka.streams.KafkaStreams
 import org.springframework.beans.factory.DisposableBean
 
@@ -19,7 +19,7 @@ open class DefaultStepStreamsRegistry : StepStreamsRegistry, DisposableBean {
 
     override fun getAllDeclaredTopics(): Set<String> = registry.getKeys()
 
-    override fun getAllKafkaStreams(): List<ApplicationStreamDefinition> = registry.getStreams()
+    override fun getAllKafkaStreams(): List<StreamDefinition> = registry.getStreams()
 
     override fun stopAllAndClean() = registry.stopAll()
 

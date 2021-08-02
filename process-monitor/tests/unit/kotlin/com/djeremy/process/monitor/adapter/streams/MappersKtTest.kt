@@ -1,5 +1,6 @@
 package com.djeremy.process.monitor.adapter.streams
 
+import com.djeremy.process.monitor.adapter.streams.process.resolveStepModel
 import io.mockk.mockk
 import org.apache.avro.specific.SpecificRecord
 import org.assertj.core.api.Assertions.assertThat

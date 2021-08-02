@@ -2,7 +2,7 @@ package com.djeremy.process.monitor.adapter.streams
 
 import com.djeremy.avro.business.process.monitor.Reference
 import com.djeremy.process.monitor.domain.process.models.StepConfigurationModel
-import com.djeremy.process.monitor.adapter.streams.step.DefaultStepTransformer
+import com.djeremy.process.monitor.domain.transformation.DefaultStepTransformer
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -44,13 +44,13 @@ internal class DefaultStepTransformerTest : Spek({
             // then
             assertSoftly{
 
-                it.assertThat(result.key).isEqualTo(configurationValue)
+                it.assertThat(result.first).isEqualTo(configurationValue)
 
-                it.assertThat(result.value.getConfigurationId()).isEqualTo(configurationValue)
-                it.assertThat(result.value.getStepId()).isEqualTo(stepValue)
-                it.assertThat(result.value.getIsLast()).isEqualTo(isLast)
+                it.assertThat(result.second.getConfigurationId()).isEqualTo(configurationValue)
+                it.assertThat(result.second.getStepId()).isEqualTo(stepValue)
+                it.assertThat(result.second.getIsLast()).isEqualTo(isLast)
 
-                it.assertThat(result.value.getReferences())
+                it.assertThat(result.second.getReferences())
                         .containsOnly(Reference(eventId, "eventId"))
             }
         }
@@ -72,13 +72,13 @@ internal class DefaultStepTransformerTest : Spek({
             // then
             assertSoftly{
 
-                it.assertThat(result.key).isEqualTo(configurationValue)
+                it.assertThat(result.first).isEqualTo(configurationValue)
 
-                it.assertThat(result.value.getConfigurationId()).isEqualTo(configurationValue)
-                it.assertThat(result.value.getStepId()).isEqualTo(stepValue)
-                it.assertThat(result.value.getIsLast()).isEqualTo(isLast)
+                it.assertThat(result.second.getConfigurationId()).isEqualTo(configurationValue)
+                it.assertThat(result.second.getStepId()).isEqualTo(stepValue)
+                it.assertThat(result.second.getIsLast()).isEqualTo(isLast)
 
-                it.assertThat(result.value.getReferences())
+                it.assertThat(result.second.getReferences())
                         .containsOnly(Reference(referenceModel.referenceId, referenceModel.referenceName))
             }
         }

@@ -1,7 +1,7 @@
 package com.djeremy.process.monitor.adapter.streams.step
 
-import com.djeremy.process.monitor.adapter.streams.TopicTransformations
-import com.djeremy.process.monitor.adapter.streams.application.ApplicationStreamDefinition
+import com.djeremy.process.monitor.domain.transformation.TopicTransformations
+import com.djeremy.process.monitor.adapter.streams.StreamDefinition
 import org.apache.kafka.streams.KafkaStreams
 
 interface StepStreamsRegistry {
@@ -11,7 +11,7 @@ interface StepStreamsRegistry {
     fun isRegisteredByTopic(topic: String): Boolean
     fun getAllDeclaredTopics(): Set<String>
 
-    fun getAllKafkaStreams(): List<ApplicationStreamDefinition>
+    fun getAllKafkaStreams(): List<StreamDefinition>
     fun stopAllAndClean()
     fun startAll()
 }

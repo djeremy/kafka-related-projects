@@ -1,6 +1,5 @@
 package com.djeremy.process.monitor.adapter.streams
 
-import com.djeremy.process.monitor.adapter.streams.application.ApplicationStreamDefinition
 import mu.KotlinLogging.logger
 import org.apache.kafka.streams.KafkaStreams
 import java.util.concurrent.ConcurrentHashMap
@@ -41,9 +40,9 @@ class KeyBasedStreamsRegistry {
 
     fun getKeys(): Set<String> = streams.keys
 
-    fun getStreams(): List<ApplicationStreamDefinition> {
+    fun getStreams(): List<StreamDefinition> {
         return streams.map {
-            ApplicationStreamDefinition(it.key, it.value)
+            StreamDefinition(it.key, it.value)
         }
     }
 

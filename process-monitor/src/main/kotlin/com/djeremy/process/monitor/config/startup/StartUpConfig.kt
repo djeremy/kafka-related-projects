@@ -8,7 +8,7 @@ import com.djeremy.process.monitor.adapter.startup.MongoIndexStartup
 import com.djeremy.process.monitor.adapter.startup.StreamsStartup
 import com.djeremy.process.monitor.adapter.startup.lock.AtomicExecutor
 import com.djeremy.process.monitor.domain.process.ProcessConfigurationService
-import com.djeremy.process.monitor.adapter.streams.application.ApplicationStreamDefinition
+import com.djeremy.process.monitor.adapter.streams.StreamDefinition
 import com.djeremy.process.monitor.adapter.streams.StreamsRegistration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -27,7 +27,7 @@ class StartUpConfig {
     @Bean
     @DependsOn("configurationPropertiesLoaderV2")
     fun streamsStartup(processConfigurationService: ProcessConfigurationService, streamsRegistration: StreamsRegistration,
-                       applicationStreamsDefinitions: List<ApplicationStreamDefinition>): StreamsStartup =
+                       applicationStreamsDefinitions: List<StreamDefinition>): StreamsStartup =
             StreamsStartup(processConfigurationService, applicationStreamsDefinitions, streamsRegistration)
 
     @Bean
