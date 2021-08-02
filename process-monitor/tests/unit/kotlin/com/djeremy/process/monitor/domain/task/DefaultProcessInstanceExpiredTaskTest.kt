@@ -381,7 +381,7 @@ internal class DefaultProcessInstanceExpiredTaskTest : Spek({
             }
 
             When("execute method is called") {
-                task.admitAndAlert(processInstance.stream().map { it.instance }.toList(), configurationCache)
+                task.admitAndAlert(processInstance.stream().map { ProcessInstanceStateProjection(it.instance) }.toList(), configurationCache)
             }
 
             Then("process instance should be admitted") {

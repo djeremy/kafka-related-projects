@@ -5,6 +5,11 @@
 Application designed can be used for dynamic tracking of outgoing processes presented as events on kafka topics.  
 We can dynamically describe such process through configuration options and define alerts once some process hanged or delayed in a particular step.
 
+Imagine you have even driven application and single business process is distributed through multiple events between different microservices. 
+Some events, do not explicitly correlates to the process, as they do not convey its id. They might sit in different level of abstraction. But they still part
+of the process, and we might need to reference to them for monitoring or BI. Process monitor is designed to solve such issues. It's dsl allows performing joins 
+on a different key without an explicitly knowing schema of each event. 
+
 This doc contains: 
 - [**Overview section**](#overview)
 - [**API description and configuration**](#api)
