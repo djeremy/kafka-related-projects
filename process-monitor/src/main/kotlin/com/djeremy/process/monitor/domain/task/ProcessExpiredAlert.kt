@@ -3,41 +3,38 @@ package com.djeremy.process.monitor.domain.task
 import com.djeremy.process.monitor.domain.port.store.ProcessConfigurationRepository
 import com.djeremy.process.monitor.domain.port.store.StepConfigurationRepository
 import com.djeremy.process.monitor.domain.process.models.*
-import mu.KotlinLogging.logger
 
 interface ProcessExpiredAlert {
     fun alertOn(processes: List<ProcessInstanceState>)
 }
 
-class LoggingProcessExpiredAlert(
+class ProcessExpiredFormatToStringAlert(
     private val processConfigurationRepository: ProcessConfigurationRepository,
-    private val stepConfigurationRepository: StepConfigurationRepository
+    private val stepConfigurationRepository: StepConfigurationRepository,
+    private val ifFinished: (String) -> Unit,
+    private val ifNotFinished: (String) -> Unit
 ) : ProcessExpiredAlert {
-
-    val logger = logger {}
 
     override fun alertOn(processes: List<ProcessInstanceState>) {
         val cache: MutableMap<ProcessConfigurationId, CachedProcess> = mutableMapOf()
-        val stepsToString: (List<StepView>) -> String = { it.joinToString(separator = "\n", prefix = "   ") }
         processes.forEach {
             val cachedInstance = cache.getOrCache(it.instance.configurationId)
 
             if (it.isFinished()) {
-                logger.warn {
+                ifFinished(
                     "[Process configuration with ${cachedInstance.formatConfiguration()} -> Process finished but exceeded" +
                             " expected time window. ProcessInstanceId [${it.instance.id}]. Please review steps manually:" +
                             "\n ${it.steps.joinToString(separator = "\n", transform = cachedInstance::formatStep)}"
-                }
+                )
             } else {
-                logger.error {
+                ifNotFinished(
                     "[Process configuration with ${cachedInstance.formatConfiguration()} -> Process has not finished in " +
                             "expected time window. ProcessInstanceId [${it.instance.id}]. Please review steps manually:" +
                             "\n ${it.steps.joinToString(separator = "\n", transform = cachedInstance::formatStep)}"
-                }
+                )
             }
         }
     }
-
 
     private fun MutableMap<ProcessConfigurationId, CachedProcess>.getOrCache(configurationId: ProcessConfigurationId): CachedProcess =
         getOrPut(configurationId) {
@@ -57,6 +54,5 @@ class LoggingProcessExpiredAlert(
             "ConfigurationId=\"${processConfiguration.id}\" and ConfigurationDescription=\"${processConfiguration.description}\""
 
         fun formatStep(stepView: StepView): String = stepView.formatAccordingTo(stepsById[stepView.stepId]!!)
-
     }
 }

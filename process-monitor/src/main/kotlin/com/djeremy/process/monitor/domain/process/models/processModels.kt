@@ -107,17 +107,17 @@ data class StepView(
 ) {
 
     fun formatAccordingTo(stepConfiguration: StepConfigurationModel): String {
-        val referencesFormatted = references.joinToString(", ", "[", "]") {
+        val referencesFormatted = references.joinToString("], [", "[", "]") {
             "refId=\"${it.referenceId}\", refName=\"${it.referenceName}\""
         }
         return """
-                    Step[
-                        eventId="+${eventId}"
-                        description="${stepConfiguration.getDescription()}"
-                        receivedAt= "${receivedAt.format(DateTimeFormatter.ISO_DATE_TIME)}
-                        references=${referencesFormatted}
-                    ]
-                """.trimIndent()
+                    |Step[
+                    |    eventId=${eventId}"
+                    |    description="${stepConfiguration.getDescription()}"
+                    |    receivedAt="${receivedAt.format(DateTimeFormatter.ISO_DATE_TIME)}
+                    |    references=${referencesFormatted}
+                    |]
+                """.trimMargin("|")
     }
 }
 
