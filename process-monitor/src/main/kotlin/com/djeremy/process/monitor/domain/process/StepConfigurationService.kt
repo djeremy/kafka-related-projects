@@ -16,7 +16,7 @@ interface StepConfigurationService {
      * @param   models and domain representation of step configuration
      * @throws  AssertionError  If a new configuration doesn't meet validation criteria.
      */
-    fun save(models: List<StepConfigurationModel>)
+    fun saveForSingleProcessConfiguration(models: List<StepConfigurationModel>)
 }
 
 class DefaultStepConfigurationService(
@@ -26,7 +26,7 @@ class DefaultStepConfigurationService(
     override fun getBy(configurationId: ProcessConfigurationId): List<StepConfigurationModel> =
             stepConfigurationRepository.getById(configurationId)
 
-    override fun save(models: List<StepConfigurationModel>) {
+    override fun saveForSingleProcessConfiguration(models: List<StepConfigurationModel>) {
         validateModel(models)
 
         val saved = stepConfigurationRepository.getById(models.first().getConfigurationId())

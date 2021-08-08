@@ -37,7 +37,7 @@ class DefaultProcessConfigurationService(
             processConfigurationRepository.save(model.process)
         }
 
-        stepConfigurationService.save(model.steps)
+        stepConfigurationService.saveForSingleProcessConfiguration(model.steps)
     }
 
     private fun shouldUpdate(model: ProcessConfiguration): Boolean =

@@ -1,10 +1,9 @@
-package com.djeremy.process.monitor.adapter.task
+package com.djeremy.process.monitor.domain.task
 
 import com.djeremy.process.monitor.domain.*
 import com.djeremy.process.monitor.domain.port.store.ProcessConfigurationRepository
 import com.djeremy.process.monitor.domain.port.store.StepConfigurationRepository
 import com.djeremy.process.monitor.domain.process.models.*
-import com.djeremy.process.monitor.domain.task.ProcessExpiredFormatToStringAlert
 import io.mockk.*
 import org.assertj.core.api.Assertions.assertThat
 import org.spekframework.spek2.Spek

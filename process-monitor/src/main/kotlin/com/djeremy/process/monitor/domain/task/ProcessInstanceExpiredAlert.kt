@@ -3,6 +3,7 @@ package com.djeremy.process.monitor.domain.task
 import com.djeremy.process.monitor.domain.port.store.ProcessConfigurationRepository
 import com.djeremy.process.monitor.domain.port.store.StepConfigurationRepository
 import com.djeremy.process.monitor.domain.process.models.*
+import mu.KotlinLogging
 
 interface ProcessExpiredAlert {
     fun alertOn(processes: List<ProcessInstanceState>)
@@ -15,23 +16,39 @@ class ProcessExpiredFormatToStringAlert(
     private val ifNotFinished: (String) -> Unit
 ) : ProcessExpiredAlert {
 
+    val logger = KotlinLogging.logger {}
+
     override fun alertOn(processes: List<ProcessInstanceState>) {
         val cache: MutableMap<ProcessConfigurationId, CachedProcess> = mutableMapOf()
-        processes.forEach {
-            val cachedInstance = cache.getOrCache(it.instance.configurationId)
+        processes.forEach { instanceToAlert ->
+            kotlin.runCatching {
+                val cachedInstance = cache.getOrCache(instanceToAlert.instance.configurationId)
 
-            if (it.isFinished()) {
-                ifFinished(
-                    "[Process configuration with ${cachedInstance.formatConfiguration()} -> Process finished but exceeded" +
-                            " expected time window. ProcessInstanceId [${it.instance.id}]. Please review steps manually:" +
-                            "\n ${it.steps.joinToString(separator = "\n", transform = cachedInstance::formatStep)}"
-                )
-            } else {
-                ifNotFinished(
-                    "[Process configuration with ${cachedInstance.formatConfiguration()} -> Process has not finished in " +
-                            "expected time window. ProcessInstanceId [${it.instance.id}]. Please review steps manually:" +
-                            "\n ${it.steps.joinToString(separator = "\n", transform = cachedInstance::formatStep)}"
-                )
+                if (instanceToAlert.isFinished()) {
+                    ifFinished(
+                        "[Process configuration with ${cachedInstance.formatConfiguration()} -> Process finished but exceeded" +
+                                " expected time window. ProcessInstanceId [${instanceToAlert.instance.id}]. Please review steps manually:" +
+                                "\n ${
+                                    instanceToAlert.steps.joinToString(
+                                        separator = "\n",
+                                        transform = cachedInstance::formatStep
+                                    )
+                                }"
+                    )
+                } else {
+                    ifNotFinished(
+                        "[Process configuration with ${cachedInstance.formatConfiguration()} -> Process has not finished in " +
+                                "expected time window. ProcessInstanceId [${instanceToAlert.instance.id}]. Please review steps manually:" +
+                                "\n ${
+                                    instanceToAlert.steps.joinToString(
+                                        separator = "\n",
+                                        transform = cachedInstance::formatStep
+                                    )
+                                }"
+                    )
+                }
+            }.onFailure {
+                logger.error(it) { "Failure to alert $instanceToAlert" }
             }
         }
     }

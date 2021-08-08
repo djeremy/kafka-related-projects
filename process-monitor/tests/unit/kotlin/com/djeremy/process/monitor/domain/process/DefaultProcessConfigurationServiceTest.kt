@@ -43,14 +43,14 @@ internal class DefaultProcessConfigurationServiceTest : Spek({
 
                 every { processRepository.save(model.process) } just runs
                 every { processRepository.getBy(model.process.id) } returns null
-                every { stepConfigurationService.save(model.steps) } just runs
+                every { stepConfigurationService.saveForSingleProcessConfiguration(model.steps) } just runs
 
                 // when
                 service.save(model)
 
                 // then
                 verify(exactly = 1) { processRepository.save(model.process) }
-                verify(exactly = 1) { stepConfigurationService.save(model.steps) }
+                verify(exactly = 1) { stepConfigurationService.saveForSingleProcessConfiguration(model.steps) }
             }
             it("for existing business process") {
                 // given
@@ -70,14 +70,14 @@ internal class DefaultProcessConfigurationServiceTest : Spek({
                 every { stepConfigurationService.getBy(model.process.id) } returns model.steps
 
                 every { processRepository.save(model.process) } just runs
-                every { stepConfigurationService.save(model.steps) } just runs
+                every { stepConfigurationService.saveForSingleProcessConfiguration(model.steps) } just runs
 
                 // when
                 service.save(model)
 
                 // then
                 verify(exactly = 1) { processRepository.save(model.process) }
-                verify(exactly = 1) { stepConfigurationService.save(model.steps) }
+                verify(exactly = 1) { stepConfigurationService.saveForSingleProcessConfiguration(model.steps) }
             }
             it("validation should throw exception when is no finish condition") {
                 // given
