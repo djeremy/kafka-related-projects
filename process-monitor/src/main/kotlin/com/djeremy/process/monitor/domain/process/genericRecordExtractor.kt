@@ -5,7 +5,7 @@ import org.apache.avro.Schema
 import org.apache.avro.generic.GenericRecord
 
 fun extractFieldStringFrom(schemaPath: String?, key: String, genericRecord: GenericRecord): String =
-        schemaPath?.let { extractFieldStringFrom(it, genericRecord) } ?: key
+    schemaPath?.let { extractFieldStringFrom(it, genericRecord) } ?: key
 
 fun extractFieldStringFrom(schemaPath: String, genericRecord: GenericRecord): String? {
     var nextValue: GenericRecord? = genericRecord
@@ -40,9 +40,9 @@ fun extractFieldStringFrom(schemaPath: String, genericRecord: GenericRecord): St
 }
 
 fun tryToMapPredefinedType(genericRecord: GenericRecord): String? =
-        predefinedTypeToStringMappers.first { (schema, _) -> schema == genericRecord.schema }.second(genericRecord)
+    predefinedTypeToStringMappers.first { (schema, _) -> schema == genericRecord.schema }.second(genericRecord)
 
 
 val predefinedTypeToStringMappers: List<Pair<Schema, (GenericRecord) -> String>> = listOf(
-        UUID.`SCHEMA$` to { it -> it.get("value") as String }
+    UUID.`SCHEMA$` to { it -> it.get("value") as String }
 )

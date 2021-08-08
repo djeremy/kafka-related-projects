@@ -1,6 +1,6 @@
 package com.djeremy.process.monitor.adapter.store
 
-import com.djeremy.process.monitor.v2._extracting
+import com.djeremy.process.monitor.utils._extracting
 import com.djeremy.process.monitor.adapter.store.mongo.ProcessInstanceDao
 import com.djeremy.process.monitor.adapter.store.mongo.ProcessInstanceStage
 import com.djeremy.process.monitor.adapter.store.mongo.ReferenceDao

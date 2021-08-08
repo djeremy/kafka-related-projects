@@ -11,7 +11,7 @@ import com.djeremy.process.monitor.domain.process.models.ProcessConfiguration
 import com.djeremy.process.monitor.domain.process.models.ProcessConfigurationId
 import com.djeremy.process.monitor.domain.process.models.ProcessInstanceState
 import com.djeremy.process.monitor.domain.process.models.ProcessInstanceStateProjection
-import com.djeremy.process.monitor.v2.f
+import com.djeremy.process.monitor.utils.f
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.just

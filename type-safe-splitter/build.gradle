@@ -35,12 +35,6 @@ dependencies {
     api 'io.confluent:kafka-streams-avro-serde:6.2.0'
 }
 
-test {
-    useJunitPlatform{
-        includeEngines 'spek2'
-    }
-}
-
 // #########################################################
 // Other
 // #########################################################

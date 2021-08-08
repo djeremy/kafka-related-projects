@@ -1,4 +1,4 @@
-package com.djeremy.process.monitor.v2
+package com.djeremy.process.monitor.utils
 
 import org.assertj.core.api.AbstractComparableAssert
 import org.assertj.core.api.AbstractListAssert

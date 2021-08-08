@@ -32,7 +32,7 @@ internal class DefaultStepConfigurationServiceTest : Spek({
                 every { repository.saveAll(any()) } just runs
 
                 // when
-                service.save(steps)
+                service.saveForSingleProcessConfiguration(steps)
 
                 // then
                 verify { repository.saveAll(steps) }
@@ -50,7 +50,7 @@ internal class DefaultStepConfigurationServiceTest : Spek({
                 every { repository.saveAll(any()) } just runs
 
                 // when
-                service.save(steps)
+                service.saveForSingleProcessConfiguration(steps)
 
                 // then
                 verify {
@@ -69,7 +69,7 @@ internal class DefaultStepConfigurationServiceTest : Spek({
                 every { repository.saveAll(any()) } just runs
 
                 // when
-                service.save(steps)
+                service.saveForSingleProcessConfiguration(steps)
 
                 // then
                 verify {
@@ -82,7 +82,7 @@ internal class DefaultStepConfigurationServiceTest : Spek({
                 val steps = listOf(`given single step configuration`(), `given single step configuration`())
 
                 // when
-                val result = catchThrowable { service.save(steps) }
+                val result = catchThrowable { service.saveForSingleProcessConfiguration(steps) }
 
                 // then
                 assertThat(result).isInstanceOf(IllegalArgumentException::class.java)
@@ -94,7 +94,7 @@ internal class DefaultStepConfigurationServiceTest : Spek({
                 val steps = listOf(step, step)
 
                 // when
-                val result = catchThrowable { service.save(steps) }
+                val result = catchThrowable { service.saveForSingleProcessConfiguration(steps) }
 
                 // then
                 assertThat(result).isInstanceOf(IllegalArgumentException::class.java)

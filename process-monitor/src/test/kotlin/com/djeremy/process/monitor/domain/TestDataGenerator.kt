@@ -102,7 +102,8 @@ fun `given process instance state in FINISHED stage`(processInstanceId: ProcessI
                                                      withSteps: List<Step> = emptyList()): ProcessInstanceState {
     val step = withSteps.takeIf { it.isNotEmpty() }
             ?: listOf(`given step`(withProcessInstanceId = true, configurationId = configurationId, processInstanceId = processInstanceId))
-    return createNew(step.first().getProcessInstance()!!, step.map{it.toView()}).finish()
+    return createNew(step.first().getProcessInstance()!!, step.map{it.toView()})
+        .finish()
 }
 
 fun `given process instance state in ADMITTED stage`(processInstanceId: ProcessInstanceId? = null,

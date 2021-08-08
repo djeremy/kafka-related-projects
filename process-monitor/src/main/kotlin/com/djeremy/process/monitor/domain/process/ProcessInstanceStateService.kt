@@ -6,6 +6,7 @@ import com.djeremy.process.monitor.domain.process.models.ProcessInstanceState
 import com.djeremy.process.monitor.domain.process.models.ProcessInstanceState.Companion.createNew
 import com.djeremy.process.monitor.domain.process.models.Step
 import com.djeremy.process.monitor.domain.process.models.StepView
+import mu.KotlinLogging
 
 interface ProcessInstanceStateService {
     fun aggregate(model: Step)
@@ -13,15 +14,15 @@ interface ProcessInstanceStateService {
 }
 
 class DefaultProcessInstanceStateService(
-        private val repository: ProcessInstanceStateRepository
+    private val repository: ProcessInstanceStateRepository
 ) : ProcessInstanceStateService {
 
-    // add result object containing failure to catch possible exceptions and ignore
+    val logger = KotlinLogging.logger {}
+
     override fun aggregate(model: Step) {
-        aggregateInternal(listOf(model), model.getProcessInstance()!!)
+            aggregateInternal(listOf(model), model.getProcessInstance()!!)
     }
 
-    // add result object containing failure to catch possible exceptions and ignore
     override fun aggregate(models: List<Step>) {
         models.groupBy { it.processInstanceId }.forEach {
             aggregateInternal(it.value, it.value.first().getProcessInstance()!!)
