@@ -1,6 +1,6 @@
 package com.djeremy.process.monitor.domain.task
 
-import com.djeremy.process.monitor.domain.process.ProcessInstanceStateService
+import com.djeremy.process.monitor.domain.process.ProcessInstanceStateAggregator
 import com.djeremy.process.monitor.domain.process.StepService
 import com.djeremy.process.monitor.domain.process.models.Step
 import io.mockk.clearMocks
@@ -15,7 +15,7 @@ import org.spekframework.spek2.style.specification.describe
 internal class DefaultProcessInstanceStateTaskTest : Spek({
 
     describe("Test DefaultProcessInstanceStateTask") {
-        val service = mockk<ProcessInstanceStateService>()
+        val service = mockk<ProcessInstanceStateAggregator>()
         val stepService = mockk<StepService>()
 
         val task: ProcessInstanceStateTask = DefaultProcessInstanceStateTask(service, stepService)

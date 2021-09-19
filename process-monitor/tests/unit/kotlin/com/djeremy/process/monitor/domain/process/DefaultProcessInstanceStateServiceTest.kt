@@ -21,7 +21,7 @@ import org.spekframework.spek2.style.specification.describe
 internal class DefaultProcessInstanceStateServiceTest : Spek({
     describe("Test join methods with different scenarios") {
         val repository: ProcessInstanceStateRepository = mockk()
-        val service: ProcessInstanceStateService = DefaultProcessInstanceStateService(repository)
+        val service: ProcessInstanceStateAggregator = DefaultProcessInstanceStateAggregator(repository)
 
         beforeEachTest { clearMocks(repository) }
 

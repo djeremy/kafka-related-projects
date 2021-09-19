@@ -1,6 +1,6 @@
 package com.djeremy.process.monitor.domain.task
 
-import com.djeremy.process.monitor.domain.process.ProcessInstanceStateService
+import com.djeremy.process.monitor.domain.process.ProcessInstanceStateAggregator
 import com.djeremy.process.monitor.domain.process.StepService
 import mu.KotlinLogging.logger
 
@@ -10,8 +10,8 @@ interface ProcessInstanceStateTask {
 }
 
 class DefaultProcessInstanceStateTask(
-        private val processInstanceStateService: ProcessInstanceStateService,
-        private val stepService: StepService
+    private val processInstanceStateAggregator: ProcessInstanceStateAggregator,
+    private val stepService: StepService
 ) : ProcessInstanceStateTask {
 
     val logger = logger {}
@@ -19,7 +19,7 @@ class DefaultProcessInstanceStateTask(
     override fun execute() {
         val newlyAssignedSteps = stepService.getNewlyAssignedSteps()
         logger.info { "Trying to join steps (${newlyAssignedSteps.size})" }
-        processInstanceStateService.aggregate(newlyAssignedSteps)
+        processInstanceStateAggregator.aggregate(newlyAssignedSteps)
         stepService.admitAssignedSteps(newlyAssignedSteps)
     }
 }
