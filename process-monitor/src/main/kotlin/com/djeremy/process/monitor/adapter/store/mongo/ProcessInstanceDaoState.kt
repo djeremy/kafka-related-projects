@@ -1,6 +1,8 @@
 package com.djeremy.process.monitor.adapter.store.mongo
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.repository.MongoRepository
@@ -42,6 +44,11 @@ interface ProcessInstanceStateIdProjection {
 }
 
 interface ProcessInstanceStateMongoRepository : MongoRepository<ProcessInstanceStateDao, ProcessInstanceDao> {
+
+    fun findAllByInstanceConfigurationId(
+        processConfigurationId: String,
+        pageable: Pageable
+    ): Page<ProcessInstanceStateDao>
 
     fun findAllByStageIsAdmittedFalseAndStartedAtBefore(
         startedAt: LocalDateTime,

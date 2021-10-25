@@ -6,33 +6,32 @@ import com.djeremy.process.monitor.adapter.store.StepMongoAdapter
 import com.djeremy.process.monitor.adapter.store.mongo.ProcessInstanceStateMongoRepository
 import com.djeremy.process.monitor.adapter.store.mongo.StepConfigurationMongoRepository
 import com.djeremy.process.monitor.adapter.store.mongo.StepMongoRepository
-import com.djeremy.process.monitor.domain.`given process instance state in ADMITTED stage`
-import com.djeremy.process.monitor.domain.`given process instance state in FINISHED stage`
-import com.djeremy.process.monitor.domain.`given process instance state in NEW stage`
-import com.djeremy.process.monitor.domain.`given step from`
-import com.djeremy.process.monitor.domain.`given step`
+import com.djeremy.process.monitor.domain.*
 import com.djeremy.process.monitor.domain.port.store.ProcessInstanceStateRepository
 import com.djeremy.process.monitor.domain.port.store.StepConfigurationRepository
 import com.djeremy.process.monitor.domain.port.store.StepRepository
-import com.djeremy.process.monitor.domain.process.DefaultProcessInstanceStateService
+import com.djeremy.process.monitor.domain.process.DefaultProcessInstanceStateAggregator
 import com.djeremy.process.monitor.domain.process.DefaultStepService
-import com.djeremy.process.monitor.domain.process.ProcessInstanceStateService
+import com.djeremy.process.monitor.domain.process.ProcessInstanceStateAggregator
 import com.djeremy.process.monitor.domain.process.StepService
+import com.djeremy.process.monitor.domain.process.models.ProcessConfigurationId
+import com.djeremy.process.monitor.domain.process.models.ProcessInstanceId
 import com.djeremy.process.monitor.domain.process.models.ProcessInstanceState
 import com.djeremy.process.monitor.domain.process.models.Step
 import com.djeremy.process.monitor.domain.task.DefaultProcessInstanceStateTask
 import com.djeremy.process.monitor.domain.task.ProcessInstanceStateTask
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest
+import org.springframework.data.domain.PageRequest.of
+import org.springframework.data.domain.Sort.Order.asc
+import org.springframework.data.domain.Sort.by
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDateTime.now
+import java.util.*
 
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
@@ -55,7 +54,7 @@ class ProcessInstanceStateMongoIT {
     lateinit var processInstanceStateRepository: ProcessInstanceStateRepository
 
     lateinit var stepService: StepService
-    lateinit var processInstanceStateService: ProcessInstanceStateService
+    lateinit var processInstanceStateAggregator: ProcessInstanceStateAggregator
 
     lateinit var processInstanceStateTask: ProcessInstanceStateTask
 
@@ -66,8 +65,8 @@ class ProcessInstanceStateMongoIT {
         stepConfigurationRepository = StepConfigurationMongoAdapter(stepConfigurationMongoRepository)
 
         stepService = DefaultStepService(stepRepository, stepConfigurationRepository)
-        processInstanceStateService = DefaultProcessInstanceStateService(processInstanceStateRepository)
-        processInstanceStateTask = DefaultProcessInstanceStateTask(processInstanceStateService, stepService)
+        processInstanceStateAggregator = DefaultProcessInstanceStateAggregator(processInstanceStateRepository)
+        processInstanceStateTask = DefaultProcessInstanceStateTask(processInstanceStateAggregator, stepService)
     }
 
     @BeforeEach
@@ -100,23 +99,24 @@ class ProcessInstanceStateMongoIT {
         val steps = stepMongoRepository.findAll()
 
         assertThat(instances.map { stateDao -> stateDao.instance!!.id to stateDao.steps!!.map { it.id } })
-                .describedAs("Instances stats has correct steps assigned")
-                .hasSize(2)
-                .containsOnly(
-                        step1_1.processInstanceId!!.value to listOf(step1_1.id, step1_2.id, step1_3.id),
-                        step2_2.processInstanceId!!.value to listOf(step2_1.id, step2_2.id))
+            .describedAs("Instances stats has correct steps assigned")
+            .hasSize(2)
+            .containsOnly(
+                step1_1.processInstanceId!!.value to listOf(step1_1.id, step1_2.id, step1_3.id),
+                step2_2.processInstanceId!!.value to listOf(step2_1.id, step2_2.id)
+            )
 
         assertThat(steps.map { it.id to it.isNewlyInstanceAssigned })
-                .hasSize(7)
-                .containsOnly(
-                        step1_1.id to false,
-                        step1_2.id to false,
-                        step1_3.id to false,
-                        step2_1.id to false,
-                        step2_2.id to false,
-                        step3_1.id to null,
-                        step4_1.id to null
-                )
+            .hasSize(7)
+            .containsOnly(
+                step1_1.id to false,
+                step1_2.id to false,
+                step1_3.id to false,
+                step2_1.id to false,
+                step2_2.id to false,
+                step3_1.id to null,
+                step4_1.id to null
+            )
     }
 
     @Test
@@ -131,8 +131,39 @@ class ProcessInstanceStateMongoIT {
 
         // then
         assertThat(result).hasSize(2)
-        assertThat(result.map{it.processInstance})
-                .containsOnly(processInstanceStateNew.instance, processInstanceStateFinished.instance)
+        assertThat(result.map { it.processInstance })
+            .containsOnly(processInstanceStateNew.instance, processInstanceStateFinished.instance)
+    }
+
+    @Test
+    internal fun `test getBy processConfigurationId and pageable when should return available entities`() {
+        // given
+        val totalStepsToCreate = 20
+        val pageSize = 10
+        val page = 0
+        val configurationId = ProcessConfigurationId(UUID.randomUUID().toString())
+        val processInstanceIds = (1..totalStepsToCreate).map { ProcessInstanceId(UUID.randomUUID().toString()) }
+        val processInstances = processInstanceIds.map {
+            `given process instance state in NEW stage`(it, configurationId.value).save()
+        }.toMutableList()
+
+        val sort = by(asc(ProcessInstanceState::startedAt.name))
+        val pageable = of(page, pageSize, sort)
+
+        // when
+        val result = processInstanceStateRepository.getBy(configurationId, pageable)
+
+        // then
+        assertAll(
+            { assertThat(result.totalElements).isEqualTo(20) },
+            {
+                assertThat(result.content)
+                    .hasSize(10)
+                    .containsAll(
+                        processInstances.take(10)
+                    )
+            }
+        )
     }
 
     private fun ProcessInstanceState.save(): ProcessInstanceState = apply { processInstanceStateRepository.save(this) }

@@ -8,14 +8,14 @@ import com.djeremy.process.monitor.domain.process.models.Step
 import com.djeremy.process.monitor.domain.process.models.StepView
 import mu.KotlinLogging
 
-interface ProcessInstanceStateService {
+interface ProcessInstanceStateAggregator {
     fun aggregate(model: Step)
     fun aggregate(models: List<Step>)
 }
 
-class DefaultProcessInstanceStateService(
+class DefaultProcessInstanceStateAggregator(
     private val repository: ProcessInstanceStateRepository
-) : ProcessInstanceStateService {
+) : ProcessInstanceStateAggregator {
 
     val logger = KotlinLogging.logger {}
 

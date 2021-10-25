@@ -3,7 +3,7 @@ package com.djeremy.process.monitor.config.domain
 import com.djeremy.process.monitor.domain.port.store.ProcessConfigurationRepository
 import com.djeremy.process.monitor.domain.port.store.ProcessInstanceStateRepository
 import com.djeremy.process.monitor.domain.port.store.StepConfigurationRepository
-import com.djeremy.process.monitor.domain.process.ProcessInstanceStateService
+import com.djeremy.process.monitor.domain.process.ProcessInstanceStateAggregator
 import com.djeremy.process.monitor.domain.process.StepService
 import com.djeremy.process.monitor.domain.task.*
 import mu.KotlinLogging
@@ -18,9 +18,9 @@ class TaskConfiguration {
 
     @Bean
     fun processInstanceStateTask(
-        processInstanceStateService: ProcessInstanceStateService,
+        processInstanceStateAggregator: ProcessInstanceStateAggregator,
         stepService: StepService
-    ): ProcessInstanceStateTask = DefaultProcessInstanceStateTask(processInstanceStateService, stepService)
+    ): ProcessInstanceStateTask = DefaultProcessInstanceStateTask(processInstanceStateAggregator, stepService)
 
     @Bean
     @Profile(value = ["!test"])

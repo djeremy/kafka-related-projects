@@ -11,20 +11,20 @@ interface StepConfigurationService {
     fun getBy(configurationId: ProcessConfigurationId): List<StepConfigurationModel>
 
     /**
-     * Updates Step configuration in storage.
+     * Updates Step configurations for single ProcessConfiguration.
      *
-     * @param   models and domain representation of step configuration
-     * @throws  AssertionError  If a new configuration doesn't meet validation criteria.
+     * @param   models and domain representation of step configuration.
+     * @throws  AssertionError  If steps belong to not a single ProcessConfiguration.
      */
     fun saveForSingleProcessConfiguration(models: List<StepConfigurationModel>)
 }
 
 class DefaultStepConfigurationService(
-        private val stepConfigurationRepository: StepConfigurationRepository
+    private val stepConfigurationRepository: StepConfigurationRepository
 ) : StepConfigurationService {
 
     override fun getBy(configurationId: ProcessConfigurationId): List<StepConfigurationModel> =
-            stepConfigurationRepository.getById(configurationId)
+        stepConfigurationRepository.getById(configurationId)
 
     override fun saveForSingleProcessConfiguration(models: List<StepConfigurationModel>) {
         validateModel(models)

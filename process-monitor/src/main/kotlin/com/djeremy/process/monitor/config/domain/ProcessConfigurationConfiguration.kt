@@ -5,11 +5,11 @@ import com.djeremy.process.monitor.domain.port.store.ProcessInstanceStateReposit
 import com.djeremy.process.monitor.domain.port.store.StepConfigurationRepository
 import com.djeremy.process.monitor.domain.port.store.StepRepository
 import com.djeremy.process.monitor.domain.process.DefaultProcessConfigurationService
-import com.djeremy.process.monitor.domain.process.DefaultProcessInstanceStateService
+import com.djeremy.process.monitor.domain.process.DefaultProcessInstanceStateAggregator
 import com.djeremy.process.monitor.domain.process.DefaultStepConfigurationService
 import com.djeremy.process.monitor.domain.process.DefaultStepService
 import com.djeremy.process.monitor.domain.process.ProcessConfigurationService
-import com.djeremy.process.monitor.domain.process.ProcessInstanceStateService
+import com.djeremy.process.monitor.domain.process.ProcessInstanceStateAggregator
 import com.djeremy.process.monitor.domain.process.StepConfigurationService
 import com.djeremy.process.monitor.domain.process.StepService
 import org.springframework.context.annotation.Bean
@@ -35,6 +35,6 @@ class ProcessConfigurationConfiguration {
             DefaultStepService(repository, stepConfigurationRepository)
 
     @Bean
-    fun processInstanceStateService(processInstanceStateRepository: ProcessInstanceStateRepository): ProcessInstanceStateService =
-            DefaultProcessInstanceStateService(processInstanceStateRepository)
+    fun processInstanceStateService(processInstanceStateRepository: ProcessInstanceStateRepository): ProcessInstanceStateAggregator =
+            DefaultProcessInstanceStateAggregator(processInstanceStateRepository)
 }
