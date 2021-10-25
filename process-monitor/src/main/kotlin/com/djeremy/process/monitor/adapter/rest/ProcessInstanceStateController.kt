@@ -10,10 +10,12 @@ import com.djeremy.process.monitor.domain.process.models.StepConfigurationModel
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 
 
 @RestController
@@ -43,22 +45,20 @@ class ProcessInstanceStateController(
         return processInstances.map {
             mapFrom(
                 it,
-                allConfigurations.getWithCache(it.instance.configurationId),
-                allSteps.getWithCache(it.instance.configurationId)
+                allConfigurations.getOrCache(it.instance.configurationId),
+                allSteps.getOrCache(it.instance.configurationId)
             )
         }
     }
 
-    private fun MutableMap<ProcessConfigurationId, ProcessConfiguration>.getWithCache(
+    private fun MutableMap<ProcessConfigurationId, ProcessConfiguration>.getOrCache(
         processConfigurationId: ProcessConfigurationId
-    ): ProcessConfiguration {
-        return computeIfAbsent(processConfigurationId) { processConfigurationRepository.getBy(it)!! }
-    }
+    ): ProcessConfiguration =
+        computeIfAbsent(processConfigurationId) { processConfigurationRepository.getBy(it)!! }
 
-    private fun MutableMap<ProcessConfigurationId, List<StepConfigurationModel>>.getWithCache(
+    private fun MutableMap<ProcessConfigurationId, List<StepConfigurationModel>>.getOrCache(
         processConfigurationId: ProcessConfigurationId
-    ): List<StepConfigurationModel> {
-        return computeIfAbsent(processConfigurationId) { stepConfigurationRepository.getById(it) }
-    }
+    ): List<StepConfigurationModel> =
+        computeIfAbsent(processConfigurationId) { stepConfigurationRepository.getById(it) }
 
 }

@@ -12,7 +12,7 @@ import com.djeremy.process.monitor.domain.process.models.ProcessInstanceId
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
-import org.hamcrest.Matchers.hasItems
+import org.hamcrest.Matchers.*
 import org.hamcrest.collection.IsCollectionWithSize.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.http.HttpHeaders.ACCEPT
 import org.springframework.http.HttpHeaders.CONTENT_TYPE
@@ -48,7 +49,7 @@ class ProcessInstanceStateControllerTest {
     @BeforeEach
     fun setUp() {
         clearMocks(
-            processConfigurationRepository,
+            processInstanceStateRepository,
             processConfigurationRepository,
             stepConfigurationRepository
         )
@@ -69,7 +70,7 @@ class ProcessInstanceStateControllerTest {
     }
 
     @Test
-    fun testMe() {
+    fun `test get processInstanceState should return correct page when valid request supplied`() {
         // given
         val configurationId = ProcessConfigurationId(UUID.randomUUID().toString())
 
@@ -118,4 +119,63 @@ class ProcessInstanceStateControllerTest {
                 )
             }
     }
+
+    @Test
+    fun `test get processInstanceState should return empty page when valid request supplied`() {
+        // given
+        val configurationId = ProcessConfigurationId(UUID.randomUUID().toString())
+
+        // given repository mocked
+        every { processInstanceStateRepository.getBy(configurationId, any()) } returns Page.empty()
+
+        // when
+        mockMvc.get("/api/process-instances") {
+            param("configurationId", configurationId.value)
+            header(ACCEPT, "application/vnd.process-instances-v1+json")
+        }
+            // then
+            .andDo { print() }
+            .andExpect { header { string(CONTENT_TYPE, "application/vnd.process-instances-v1+json") } }
+            .andExpect { status { isEqualTo(200) } }
+            .andExpect { jsonPath("$.content", hasSize<Any>(0)) }
+    }
+
+    @Test
+    fun `test get processInstanceState should return NOT_ACCEPTABLE status code when wrong Accept header supplied`() {
+        // given
+        val configurationId = ProcessConfigurationId(UUID.randomUUID().toString())
+
+        // given repository mocked
+        every { processInstanceStateRepository.getBy(configurationId, any()) } returns Page.empty()
+
+        // when
+        mockMvc.get("/api/process-instances") {
+            param("configurationId", configurationId.value)
+            header(ACCEPT, "wrong-accept-header")
+        }
+            // then
+            .andDo { print() }
+            .andExpect { status { isEqualTo(406) } }
+    }
+
+    @Test
+    fun `test get processInstanceState should return INTERNAL_SERVER_ERROR status code when wrong any exception is thrown`() {
+        // given
+        val configurationId = ProcessConfigurationId(UUID.randomUUID().toString())
+
+        // given repository mocked
+        every { processInstanceStateRepository.getBy(configurationId, any()) } throws RuntimeException("DA BUM!!!")
+
+        // when
+        mockMvc.get("/api/process-instances") {
+            param("configurationId", configurationId.value)
+            header(ACCEPT, "application/vnd.process-instances-v1+json")
+        }
+            // then
+            .andDo { print() }
+            .andExpect { status { isEqualTo(500) } }
+            .andExpect { jsonPath("$.code", `is`("internal.error")) }
+            .andExpect { jsonPath("$.message", containsString("DA BUM!!!")) }
+    }
+
 }
